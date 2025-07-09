@@ -8,7 +8,7 @@ public class CancelableRunnableWrapper extends CancelableRunnable {
 
     public CancelableRunnableWrapper() {
     }
-    
+
     public Runnable getBackingRunnable() {
         return backingRunnable;
     }

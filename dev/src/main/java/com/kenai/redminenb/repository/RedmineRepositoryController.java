@@ -17,17 +17,34 @@
 package com.kenai.redminenb.repository;
 
 import com.kenai.redminenb.Redmine;
+import com.kenai.redminenb.api.AuthMode;
 import com.kenai.redminenb.project.RedmineProjectPanel;
 import com.kenai.redminenb.ui.Defaults;
 import com.kenai.redminenb.util.ListComboBoxModel;
-import com.kenai.redminenb.util.RedmineUtil;
-
-import com.kenai.redminenb.api.AuthMode;
 import com.kenai.redminenb.util.NestedProject;
+import com.kenai.redminenb.util.RedmineUtil;
 import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.RedmineManagerFactory;
 import com.taskadapter.redmineapi.bean.Project;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.jsoup.Jsoup;
+import org.netbeans.modules.bugtracking.spi.RepositoryController;
+import org.netbeans.modules.bugtracking.spi.RepositoryInfo;
+import org.openide.util.ChangeSupport;
+import org.openide.util.HelpCtx;
+import org.openide.util.NbBundle;
+import org.openide.util.NbBundle.Messages;
+
+import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -42,20 +59,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.management.RuntimeErrorException;
-import javax.swing.JComponent;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
-import org.jsoup.Jsoup;
-import org.netbeans.modules.bugtracking.spi.RepositoryController;
-import org.netbeans.modules.bugtracking.spi.RepositoryInfo;
-import org.openide.util.*;
-import org.openide.util.NbBundle.Messages;
 
 /**
  * Redmine repository parameter controller.
@@ -78,7 +81,7 @@ import org.openide.util.NbBundle.Messages;
 })
 public class RedmineRepositoryController implements RepositoryController, DocumentListener, ActionListener, ItemListener {
     private static final Logger LOG = Logger.getLogger(RedmineRepositoryController.class.getName());
-    
+
     private final RedmineRepository repository;
     private final RedmineRepositoryPanel panel;
     private String errorMessage;
@@ -103,7 +106,7 @@ public class RedmineRepositoryController implements RepositoryController, Docume
 
         panel.rbAccessKey.addActionListener(this);
         panel.rbCredentials.addActionListener(this);
-        
+
         panel.httpAuthEnabled.addActionListener(this);
         panel.httpPwdField.getDocument().addDocumentListener(this);
         panel.httpUserField.getDocument().addDocumentListener(this);
@@ -146,11 +149,11 @@ public class RedmineRepositoryController implements RepositoryController, Docume
     private boolean isFeatureWatchers() {
         return panel.featureWatchers.isSelected();
     }
-    
+
     private boolean isFeatureDeleteAttachments() {
         return panel.featureDeleteAttachments.isSelected();
     }
-    
+
     private String getHttpUser() {
         return panel.httpUserField.getText();
     }
@@ -250,13 +253,13 @@ public class RedmineRepositoryController implements RepositoryController, Docume
         panel.accessKeyTextField.setText(repository.getAccessKey());
         panel.userField.setText(repository.getUsername());
         panel.pwdField.setText(repository.getPassword() == null ? "" : String.valueOf(repository.getPassword()));
-        
+
         RepositoryInfo info = repository.getInfo();
-        
-        if( info != null 
-                && info.getHttpUsername() != null 
+
+        if( info != null
+                && info.getHttpUsername() != null
                 && (! info.getHttpUsername().isEmpty())
-                && info.getHttpPassword() != null 
+                && info.getHttpPassword() != null
                 && info.getHttpPassword().length > 0) {
             panel.httpAuthEnabled.setSelected(true);
             panel.httpUserField.setText(info.getHttpUsername());
@@ -266,7 +269,7 @@ public class RedmineRepositoryController implements RepositoryController, Docume
             panel.httpUserField.setText("");
             panel.httpPwdField.setText("");
         }
-        
+
         List<ProjectId> initList = new ArrayList<>();
         initList.add(null);
         if(repository.getProjectID() != null) {
@@ -277,10 +280,10 @@ public class RedmineRepositoryController implements RepositoryController, Docume
         } else {
             panel.projectComboBox.setModel(new ListComboBoxModel<>(initList));
         }
-        
+
         panel.featureWatchers.setSelected(repository.isFeatureWatchers());
         panel.featureDeleteAttachments.setSelected(repository.isFeatureDeleteAttachments());
-        
+
         panel.setFieldsEnabled(true);
     }
 
@@ -312,7 +315,7 @@ public class RedmineRepositoryController implements RepositoryController, Docume
 
     private void onConnect() {
         panel.setFieldsEnabled(false);
-        
+
         new SwingWorker<List<ProjectId>,Object>() {
 
             @Override
@@ -452,8 +455,8 @@ public class RedmineRepositoryController implements RepositoryController, Docume
                     , RedmineManagerFactoryHelper.getTransportConfig()
             );
             if(panel.httpAuthEnabled.isSelected()) {
-                RedmineManagerFactoryHelper.getTransportFromManager(manager)
-                        .setCredentials(getHttpUser(), new String(getHttpPassword()));
+                //RedmineManagerFactoryHelper.getTransportFromManager(manager)
+                //       .setCredentials(getHttpUser(), new String(getHttpPassword()));
             }
         } else {
             manager = RedmineManagerFactory.createWithUserAuth(

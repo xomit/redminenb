@@ -26,6 +26,14 @@ import com.kenai.redminenb.util.SafeAutoCloseable;
 import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.Project;
+
+import org.apache.commons.lang3.StringUtils;
+import org.netbeans.modules.bugtracking.spi.QueryController;
+import org.netbeans.modules.bugtracking.spi.QueryProvider;
+import org.openide.util.Mutex;
+
+import javax.swing.SwingUtilities;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
@@ -39,11 +47,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.SwingUtilities;
-import org.apache.commons.lang.StringUtils;
-import org.netbeans.modules.bugtracking.spi.QueryController;
-import org.netbeans.modules.bugtracking.spi.QueryProvider;
-import org.openide.util.Mutex;
 
 /**
  * Redmine Query.
@@ -64,16 +67,13 @@ public final class RedmineQuery {
     //
     private Map<String, ParameterValue[]> parameters = new HashMap<>();
     private final RedmineQueryController queryController;
-    
+
     private Integer busy = 0;
-    
-    private final SafeAutoCloseable busyHelper = new SafeAutoCloseable() {
-        @Override
-        public void close() {
-            setBusy(false);
-        }
-    };
-    
+
+    private final SafeAutoCloseable busyHelper = () -> {
+		setBusy(false);
+	};
+
     public SafeAutoCloseable busy() {
         setBusy(true);
         return busyHelper;
@@ -82,7 +82,7 @@ public final class RedmineQuery {
     public synchronized boolean isBusy() {
         return busy != 0;
     }
-    
+
     public synchronized void setBusy(boolean busyBool) {
         final boolean oldBusy = isBusy();
         if (busyBool) {
@@ -93,18 +93,15 @@ public final class RedmineQuery {
         if (busy < 0) {
             throw new IllegalStateException("Inbalanced busy/nonbusy");
         }
-        Mutex.EVENT.writeAccess(new Runnable() {
-            @Override
-            public void run() {
-                 support.firePropertyChange("busy", oldBusy, busy != 0);
-            }
-        });
+        Mutex.EVENT.writeAccess(() -> {
+			support.firePropertyChange("busy", oldBusy, busy != 0);
+		});
     }
-    
+
     public RedmineQueryController getController() {
         return queryController;
     }
-    
+
     public RedmineQuery(RedmineRepository repository) {
         this.repository = repository;
         this.queryController = new RedmineQueryController(repository, this);
@@ -136,7 +133,7 @@ public final class RedmineQuery {
 
     public void setParameters(Map<String, ParameterValue[]> parameters) {
         if(parameters == null) {
-            parameters = Collections.EMPTY_MAP;
+            parameters = new HashMap<String, ParameterValue[]>();
         }
         boolean changed = ! parameters.equals(this.parameters);
         this.parameters = parameters;
@@ -176,59 +173,53 @@ public final class RedmineQuery {
     private boolean doRefresh(final boolean autoRefresh) {
         // XXX what if already running! - cancel task
         assert !SwingUtilities.isEventDispatchThread() : "Accessing remote host. Do not call in awt"; // NOI18N
-        
+
         final boolean ret[] = new boolean[1];
-        try(SafeAutoCloseable sac = busy()) {
-            executeQuery(new Runnable() {
-                @Override
-                public void run() {
-                    Redmine.LOG.log(Level.FINE, "refresh start - {0}", name); // NOI18N
-                    try {
-                        if (delegateContainer != null) {
-                            delegateContainer.refreshingStarted();
-                            delegateContainer.clear();
-                        }
+        try{
+            executeQuery(() -> {
+				Redmine.LOG.log(Level.FINE, "refresh start - {0}", name); // NOI18N
+				try {
+					if (delegateContainer != null) {
+						delegateContainer.refreshingStarted();
+						delegateContainer.clear();
+					}
 
-                        issues.clear();
+					issues.clear();
 
-                        firstRun = false;
-                        try {
-                            List<Issue> issueArr = doSearch();
-                            IssueCache issueCache = repository.getIssueCache();
-                            for (Issue issue : issueArr) {
-                                RedmineIssue redmineIssue = issueCache.cachedRedmineIssue(issue);
-                                issues.add(redmineIssue);
-                                if (delegateContainer != null) {
-                                    delegateContainer.add(redmineIssue);
-                                }
-                                fireNotifyData(redmineIssue); // XXX - !!! triggers getIssues()
-                            }
+					firstRun = false;
+					try {
+						List<Issue> issueArr = doSearch();
+						IssueCache issueCache = repository.getIssueCache();
+						for (Issue issue : issueArr) {
+							RedmineIssue redmineIssue = issueCache.cachedRedmineIssue(issue);
+							issues.add(redmineIssue);
+							if (delegateContainer != null) {
+								delegateContainer.add(redmineIssue);
+							}
+							fireNotifyData(redmineIssue); // XXX - !!! triggers getIssues()
+						}
 
-                        } catch (RedmineException | RuntimeException ex) {
-                            ExceptionHandler.handleException(LOG, "Failed to search", ex);
-                        }
+					} catch (RedmineException | RuntimeException ex) {
+						ExceptionHandler.handleException(LOG, "Failed to search", ex);
+					}
 
-                        if (delegateContainer != null) {
-                            delegateContainer.refreshingFinished();
-                        }
-                    } finally {
-                        logQueryEvent(issues.size(), autoRefresh);
-                        Redmine.LOG.log(Level.FINE, "refresh finish - {0}", name); // NOI18N
-                    }
-                }
-            });
+					if (delegateContainer != null) {
+						delegateContainer.refreshingFinished();
+					}
+				} finally {
+					logQueryEvent(issues.size(), autoRefresh);
+					Redmine.LOG.log(Level.FINE, "refresh finish - {0}", name); // NOI18N
+				}
+			});
+		} catch (final Exception ex) {
+			Redmine.LOG.log(Level.SEVERE, "refresh failed - {0}", ex.getMessage()); // NOI18N
         }
 
         return ret[0];
     }
 
     protected void logQueryEvent(int count, boolean autoRefresh) {
-        LOG.fine(String.format("Query '%s-%s', Count: %d, Autorefresh: %b",
-                RedmineConnector.NAME,
-                name,
-                count,
-                autoRefresh
-                ));
+        LOG.fine(String.format("Query '%s-%s', Count: %d, Autorefresh: %b", RedmineConnector.NAME, name, count, autoRefresh));
     }
 
     /**
@@ -244,7 +235,7 @@ public final class RedmineQuery {
      */
     private List<Issue> doSearch() throws RedmineException {
         boolean searchDescription = false;
-        
+
         ParameterValue[] queryStringParameter = parameters.get("query");
         String queryStr = ParameterValue.flattenList(queryStringParameter);
 
@@ -292,7 +283,7 @@ public final class RedmineQuery {
         int offset = 0;
         for(int i = 0; i < 100; i++) {
             // Perform search
-            // According to the documentation 100 is the maximum  
+            // According to the documentation 100 is the maximum
             m.put("limit", Integer.toString(100));
             m.put("offset", Integer.toString(offset));
             List<Issue> queryResult = repository.getIssueManager().getIssues(m).getResults();
@@ -402,7 +393,7 @@ public final class RedmineQuery {
         List<QueryNotifyListener> list = getNotifyListeners();
         QueryNotifyListener[] listeners;
         synchronized (list) {
-            listeners = list.toArray(new QueryNotifyListener[list.size()]);
+            listeners = list.toArray(QueryNotifyListener[]::new);
         }
         return listeners;
     }

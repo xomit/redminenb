@@ -1,27 +1,30 @@
 package com.kenai.redminenb.repository;
 
 import com.kenai.redminenb.api.AuthMode;
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import com.kenai.redminenb.util.LinkButton;
+
+import org.openide.util.NbBundle;
+
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import com.kenai.redminenb.util.LinkButton;
+import javax.swing.JTextPane;
+
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import javax.swing.ImageIcon;
-import javax.swing.JCheckBox;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import org.openide.util.NbBundle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  *
@@ -29,17 +32,19 @@ import org.openide.util.NbBundle;
  */
 public class RedmineRepositoryPanel extends javax.swing.JPanel implements ActionListener {
 
+	private static final long serialVersionUID = 1L;
+
     private boolean fieldsEnabled = true;
     private final RedmineRepositoryController controller;
 
     public RedmineRepositoryPanel(RedmineRepositoryController controller) {
         this.controller = controller;
         initComponents();
-        
+
         rbAccessKey.addActionListener(this);
         rbCredentials.addActionListener(this);
         httpAuthEnabled.addActionListener(this);
-        
+
         updateFieldState();
     }
 
@@ -56,24 +61,24 @@ public class RedmineRepositoryPanel extends javax.swing.JPanel implements Action
         pwdField.setEnabled(fieldsEnabled);
         projectLabel.setEnabled(fieldsEnabled);
         httpAuthEnabled.setEnabled(fieldsEnabled);
-        
+
         accessKeyTextField.setEnabled(rbAccessKey.isSelected());
         httpAuthEnabled.setEnabled(rbAccessKey.isSelected());
         httpUserField.setEnabled(httpAuthEnabled.isEnabled() && httpAuthEnabled.isSelected());
         httpPwdField.setEnabled(httpAuthEnabled.isEnabled() && httpAuthEnabled.isSelected());
-        
+
         userField.setEnabled(rbCredentials.isSelected());
         pwdField.setEnabled(rbCredentials.isSelected());
-        
+
         featureWatchers.setEnabled(fieldsEnabled);
         featureDeleteAttachments.setEnabled(fieldsEnabled);
         featuresLabel.setEnabled(fieldsEnabled);
-        
+
         connectButton.setEnabled(fieldsEnabled);
         projectComboBox.setEnabled(fieldsEnabled);
         createNewProjectButton.setEnabled(fieldsEnabled);
     }
-    
+
     public void setFieldsEnabled(boolean enabled) {
         boolean oldState = this.fieldsEnabled;
         this.fieldsEnabled = enabled;

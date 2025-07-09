@@ -15,10 +15,10 @@
  */
 package com.kenai.redminenb.util;
 
-import java.io.Serializable;
+import javax.swing.MutableComboBoxModel;
+
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.MutableComboBoxModel;
 
 /**
  *
@@ -27,78 +27,79 @@ import javax.swing.MutableComboBoxModel;
 @SuppressWarnings("unchecked")
 public class ListComboBoxModel<T> extends ListListModel<T> implements MutableComboBoxModel {
 
-   private T selectedObject;
+	private static final long serialVersionUID = 1L;
 
-   public ListComboBoxModel() {
-      this(new ArrayList<T>());
-   }
+	private T selectedObject;
 
-   public ListComboBoxModel(List<T> list) {
-      super(list);
-   }
+	public ListComboBoxModel() {
+		this(new ArrayList<>());
+	}
 
-   public void setSelectedObject(T anObject) {
-      if ((selectedObject != null && !selectedObject.equals(anObject))
-              || selectedObject == null && anObject != null) {
-         selectedObject = anObject;
-         fireContentsChanged(this, -1, -1);
-      }
-   }
+	public ListComboBoxModel(List<T> list) {
+		super(list);
+	}
 
-   // ComboBoxModel implementation --------------------------------------------
-   @Override
-   public void setSelectedItem(Object anItem) {
-      setSelectedObject((T)anItem);
-   }
+	public void setSelectedObject(T anObject) {
+		if ((selectedObject != null && !selectedObject.equals(anObject)) || selectedObject == null && anObject != null) {
+			selectedObject = anObject;
+			fireContentsChanged(this, -1, -1);
+		}
+	}
 
-   @Override
-   public Object getSelectedItem() {
-      return selectedObject;
-   }
+	// ComboBoxModel implementation --------------------------------------------
+	@Override
+	public void setSelectedItem(Object anItem) {
+		setSelectedObject((T) anItem);
+	}
 
-   @Override
-   public void add(T e) {
-      super.add(e);
-      if (list.size() == 1 && selectedObject == null && e != null) {
-         setSelectedItem(e);
-      }
-   }
+	@Override
+	public Object getSelectedItem() {
+		return selectedObject;
+	}
 
-   @Override
-   public T remove(int index) {
-      if (getElementAt(index) == selectedObject) {
-         if (index == 0) {
-            setSelectedItem(getSize() == 1 ? null : getElementAt(index + 1));
-         } else {
-            setSelectedItem(getElementAt(index - 1));
-         }
-      }
-      return super.remove(index);
-   }
+	@Override
+	public void add(T e) {
+		super.add(e);
+		if (list.size() == 1 && selectedObject == null && e != null) {
+			setSelectedItem(e);
+		}
+	}
 
-   @Override
-   public void clear() {
-      selectedObject = null;
-      super.clear();
-   }
+	@Override
+	public T remove(int index) {
+		if (getElementAt(index) == selectedObject) {
+			if (index == 0) {
+				setSelectedItem(getSize() == 1 ? null : getElementAt(index + 1));
+			} else {
+				setSelectedItem(getElementAt(index - 1));
+			}
+		}
+		return super.remove(index);
+	}
 
-   @Override
-   public void addElement(Object obj) {
-      add((T)obj);
-   }
+	@Override
+	public void clear() {
+		selectedObject = null;
+		super.clear();
+	}
 
-   @Override
-   public void removeElement(Object obj) {
-      remove((T)obj);
-   }
+	@Override
+	public void addElement(Object obj) {
+		add((T) obj);
+	}
 
-   @Override
-   public void insertElementAt(Object obj, int index) {
-      add(index, (T)obj);
-   }
+	@Override
+	public void removeElement(Object obj) {
+		remove((T) obj);
+	}
 
-   @Override
-   public void removeElementAt(int index) {
-      remove(index);
-   }
+	@Override
+	public void insertElementAt(Object obj, int index) {
+		add(index, (T) obj);
+	}
+
+	@Override
+	public void removeElementAt(int index) {
+		remove(index);
+	}
 }

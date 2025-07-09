@@ -2,19 +2,23 @@ package com.kenai.redminenb.util;
 
 import com.kenai.redminenb.issue.RedmineIssue;
 import com.taskadapter.redmineapi.bean.Attachment;
+
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.concurrent.ExecutionException;
+
 import javax.swing.BoxLayout;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
-import org.openide.DialogDisplayer;
-import org.openide.NotifyDescriptor;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.concurrent.ExecutionException;
 
 public class AttachmentDisplay extends DelegatingBaseLineJPanel implements ActionListener {
 
@@ -106,8 +110,8 @@ public class AttachmentDisplay extends DelegatingBaseLineJPanel implements Actio
             }
         } else if (COMMAND_DELETE.equals(e.getActionCommand())) {
             NotifyDescriptor nd = new NotifyDescriptor.Confirmation(
-                    "Are you sure you want to delete the attachment:\n\n" + ad.getFileName(), 
-                    "Delete attachment", 
+                    "Are you sure you want to delete the attachment:\n\n" + ad.getFileName(),
+                    "Delete attachment",
                     NotifyDescriptor.OK_CANCEL_OPTION);
             Object selected = DialogDisplayer.getDefault().notify(nd);
             if(selected != NotifyDescriptor.OK_OPTION) {

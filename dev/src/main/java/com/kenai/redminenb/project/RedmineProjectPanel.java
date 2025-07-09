@@ -3,17 +3,22 @@ package com.kenai.redminenb.project;
 import com.kenai.redminenb.util.ActionListenerPanel;
 import com.kenai.redminenb.util.ExceptionHandler;
 import com.taskadapter.redmineapi.RedmineException;
+
 import java.awt.event.ActionEvent;
 import java.util.regex.Pattern;
+
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
 import org.openide.util.NbBundle;
+
 import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.bean.Project;
-import com.taskadapter.redmineapi.bean.ProjectFactory;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.util.logging.Logger;
+
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -97,8 +102,8 @@ public class RedmineProjectPanel extends ActionListenerPanel implements Document
    }
 
    private boolean createNewProject() {
-      final Project project = ProjectFactory.create();
-      
+      final Project project = new Project(redmineManager.getTransport());
+
       project.setName(projectName);
       project.setDescription(description);
       project.setIdentifier(identifier);

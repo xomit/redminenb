@@ -28,39 +28,37 @@ import org.openide.util.NbBundle;
  *
  * @author Anchialas <anchialas@gmail.com>
  */
-@NbBundle.Messages({
-    "LBL_ConnectorTooltip=NetBeans plugin for integration with Redmine"
-})
-@BugtrackingConnector.Registration(id = RedmineConnector.ID,
-        displayName = RedmineConnector.NAME,
-        tooltip = "#LBL_ConnectorTooltip",
-        iconPath = "com/kenai/redminenb/resources/redmine.png")
+@NbBundle.Messages({ "LBL_ConnectorTooltip=NetBeans plugin for integration with Redmine" })
+@BugtrackingConnector.Registration(
+	id = RedmineConnector.ID,
+	displayName = RedmineConnector.NAME,
+	tooltip = "#LBL_ConnectorTooltip",
+	iconPath = "com/kenai/redminenb/resources/redmine.png"
+)
 public class RedmineConnector implements BugtrackingConnector {
 
-    public static final String ID = "com.kenai.redminenb";
-    public static final String NAME = "Redmine";
+	public static final String ID = "com.kenai.redminenb";
+	public static final String NAME = "Redmine";
 
-    private RedmineConnector() {
-    }
+	@Override
+	public Repository createRepository(RepositoryInfo info) {
+		RedmineRepository repo = new RedmineRepository(info);
+		return createRepository(repo);
+	}
 
-    @Override
-    public Repository createRepository(RepositoryInfo info) {
-        RedmineRepository repo = new RedmineRepository(info);
-        return createRepository(repo);
-    }
+	@Override
+	public Repository createRepository() {
+		RedmineRepository repo = new RedmineRepository();
+		return createRepository(repo);
+	}
 
-    @Override
-    public Repository createRepository() {
-        RedmineRepository repo = new RedmineRepository();
-        return createRepository(repo);
-    }
-
-    private Repository createRepository(RedmineRepository repo) {
-        return Redmine.getInstance().getSupport().createRepository(
-                repo,
-                null, // Status provider needs a persistent cache
-                Redmine.getInstance().getIssueScheduleProvider(),
-                new RedmineIssuePriorityProvider(repo),
-                null);
-    }
+	private Repository createRepository(RedmineRepository repo) {
+		return Redmine.getInstance().getSupport().createRepository(
+			repo,
+			null, // Status provider needs a persistent cache
+			Redmine.getInstance().getIssueScheduleProvider(),
+			new RedmineIssuePriorityProvider(repo),
+			null
+		);
+	}
 }

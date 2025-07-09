@@ -2,89 +2,36 @@ package com.kenai.redminenb.issue;
 
 import com.kenai.redminenb.Redmine;
 import com.kenai.redminenb.issue.JournalDisplay.JournalData;
+import com.kenai.redminenb.repository.RedmineRepository;
 import com.kenai.redminenb.ui.Defaults;
 import com.kenai.redminenb.user.RedmineUser;
-import com.kenai.redminenb.util.ListComboBoxModel;
-import com.kenai.redminenb.util.RedmineUtil;
-
-import com.kenai.redminenb.repository.RedmineRepository;
 import com.kenai.redminenb.util.AssigneeWrapper;
 import com.kenai.redminenb.util.AttachmentDisplay;
 import com.kenai.redminenb.util.ExceptionHandler;
 import com.kenai.redminenb.util.ExpandablePanel;
-import com.taskadapter.redmineapi.bean.IssueCategory;
-import com.taskadapter.redmineapi.bean.IssuePriority;
-import com.taskadapter.redmineapi.bean.IssueStatus;
-import com.taskadapter.redmineapi.bean.Tracker;
-import com.taskadapter.redmineapi.bean.Version;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.event.ActionEvent;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.NumberFormat;
-import java.util.Collection;
-import java.util.logging.Level;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.GroupLayout;
-import javax.swing.JButton;
-import javax.swing.JFormattedTextField;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JToggleButton;
-import javax.swing.LayoutStyle;
-import org.apache.commons.lang.StringUtils;
 import com.kenai.redminenb.util.LinkButton;
+import com.kenai.redminenb.util.ListComboBoxModel;
 import com.kenai.redminenb.util.NestedProject;
 import com.kenai.redminenb.util.NullOrIntegerFormat;
+import com.kenai.redminenb.util.RedmineUtil;
 import com.kenai.redminenb.util.SafeAutoCloseable;
 import com.kenai.redminenb.util.VerticalScrollPane;
 import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.bean.Attachment;
 import com.taskadapter.redmineapi.bean.CustomField;
 import com.taskadapter.redmineapi.bean.CustomFieldDefinition;
-import com.taskadapter.redmineapi.bean.CustomFieldFactory;
 import com.taskadapter.redmineapi.bean.Issue;
-import com.taskadapter.redmineapi.bean.IssueCategoryFactory;
+import com.taskadapter.redmineapi.bean.IssueCategory;
+import com.taskadapter.redmineapi.bean.IssuePriority;
+import com.taskadapter.redmineapi.bean.IssueStatus;
 import com.taskadapter.redmineapi.bean.Journal;
 import com.taskadapter.redmineapi.bean.Project;
-import com.taskadapter.redmineapi.bean.ProjectFactory;
 import com.taskadapter.redmineapi.bean.TimeEntry;
 import com.taskadapter.redmineapi.bean.TimeEntryActivity;
-import com.taskadapter.redmineapi.bean.TimeEntryFactory;
-import com.taskadapter.redmineapi.bean.TrackerFactory;
-import com.taskadapter.redmineapi.bean.VersionFactory;
-import java.awt.Component;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.io.File;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Logger;
-import javax.swing.Box.Filler;
-import javax.swing.JFileChooser;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
-import javax.xml.ws.Holder;
+import com.taskadapter.redmineapi.bean.Tracker;
+import com.taskadapter.redmineapi.bean.Version;
+
+import org.apache.commons.lang3.StringUtils;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.DropDownButtonFactory;
@@ -94,6 +41,56 @@ import org.openide.util.ImageUtilities;
 import org.openide.util.Mutex;
 import org.openide.util.NbBundle;
 import org.openide.windows.WindowManager;
+
+import jakarta.xml.ws.Holder;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.Box.Filler;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.GroupLayout;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.JToggleButton;
+import javax.swing.LayoutStyle;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Panel showing a Redmine Issue.
@@ -115,14 +112,14 @@ public class RedmineIssuePanel extends VerticalScrollPane {
    private JPopupMenu toolbarPopup;
    private final ExpandablePanel commentPanel;
    private final ExpandablePanel logtimePanel;
-   
+
    private final static int CUSTOM_ROW_START = 9;
    private final static int CUSTOM_ROW_END = 18;
    private final List<CustomFieldComponent> customFields = new ArrayList<>();
    Map<Integer,Object> customFieldValueBackingStore = new HashMap<>();
-   
+
    private final AtomicInteger updateRunning = new AtomicInteger(0);
-   
+
     private final ItemListener projectTrackerListener = new ItemListener() {
         @Override
         public void itemStateChanged(ItemEvent e) {
@@ -177,7 +174,7 @@ public class RedmineIssuePanel extends VerticalScrollPane {
         }
         customFields.clear();
     }
-    
+
     public void addCustomField(CustomFieldComponent cfc) {
         int row = CUSTOM_ROW_START + (customFields.size() / 2);
         if(row > CUSTOM_ROW_END) {
@@ -185,7 +182,7 @@ public class RedmineIssuePanel extends VerticalScrollPane {
         }
 
         boolean even = customFields.size() % 2 == 0;
-        
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.anchor = GridBagConstraints.BASELINE_LEADING;
         gbc.gridx = even ? 0 : 3;
@@ -195,17 +192,17 @@ public class RedmineIssuePanel extends VerticalScrollPane {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(2, 2, 2, 2);
         gbc.weightx = 0;
-        
+
         issuePane.add(cfc.getLabel(), gbc);
-        
+
         gbc.weightx = 1;
         gbc.gridx = even ? 1 : 4;
         gbc.gridwidth = 2;
-        
+
         issuePane.add(cfc, gbc);
         customFields.add(cfc);
     }
-    
+
     public CustomFieldComponent getCustomFieldById(Integer id) {
         for(CustomFieldComponent cfc: customFields) {
             if(cfc.getCustomFieldDefinition().getId().equals(id)) {
@@ -214,15 +211,15 @@ public class RedmineIssuePanel extends VerticalScrollPane {
         }
         return null;
     }
-    
+
     public List<CustomFieldComponent> getCustomFields() {
         return Collections.unmodifiableList(customFields);
     }
-   
+
    void updateCommentTextileOutput() {
        updateCommentHtmlOutputLabel.setTextileText(updateCommentTextArea.getText());
    }
-   
+
    void updateTextileOutput() {
         htmlOutputLabel.setTextileText(descTextArea.getText());
    }
@@ -269,10 +266,10 @@ public class RedmineIssuePanel extends VerticalScrollPane {
            }
        }
    }
-   
+
    /**
     * Initialize panel data from issue.
-    * 
+    *
     * @param edtUpdate can be null, if not null is called on the EDT
     */
     private void initIssueUnderUpdateLock(final Runnable edtUpdate) {
@@ -378,7 +375,7 @@ public class RedmineIssuePanel extends VerticalScrollPane {
                     trackerComboBox.setSelectedItem(issue.getTracker());
                     statusComboBox.setSelectedItem(issueStatus.value);
                     categoryComboBox.setSelectedItem(issue.getCategory());
-                    Project project = ProjectFactory.create(issue.getProjectId());
+                    Project project = new Project(redmineIssue.getRepository().getManager().getTransport()).setId(issue.getProjectId());
                     project.setName(issue.getProjectName());
                     projectComboBox.setSelectedItem(new NestedProject(project));
 
@@ -559,7 +556,7 @@ public class RedmineIssuePanel extends VerticalScrollPane {
             }
         };
         if (issue != null) {
-            initProjectData(true, ProjectFactory.create(issue.getProjectId()), issue.getTracker(), edtUpdate2);
+            initProjectData(true, new Project(redmineIssue.getRepository().getManager().getTransport()).setId(issue.getProjectId()), issue.getTracker(), edtUpdate2);
         } else {
             initProjectData(true, null, null, edtUpdate2);
         }
@@ -567,7 +564,7 @@ public class RedmineIssuePanel extends VerticalScrollPane {
 
     /**
      * Initialize project/tracker dependend data.
-     * 
+     *
      * @param init indicates whether this is called after the issue was completely reset or just project/tracker changed
      * @param project currently selected project
      * @param tracker currently selected tracker
@@ -601,7 +598,7 @@ public class RedmineIssuePanel extends VerticalScrollPane {
                     if(edtInit != null) {
                         edtInit.run();
                     }
-                    
+
                     assigneeModel.setSelectedItem(assigneeComboBox.getSelectedItem());
                     categoryModel.setSelectedItem(categoryComboBox.getSelectedItem());
                     versionsModel.setSelectedItem(targetVersionComboBox.getSelectedItem());
@@ -635,7 +632,7 @@ public class RedmineIssuePanel extends VerticalScrollPane {
                             if(cfc.getCustomFieldDefinition().isMultiple()) {
                                 customFieldValueBackingStore.put(
                                         cfc.getCustomFieldDefinition().getId(),
-                                        cfc.getValues());                                
+                                        cfc.getValues());
                             } else {
                                 customFieldValueBackingStore.put(
                                         cfc.getCustomFieldDefinition().getId(),
@@ -676,13 +673,13 @@ public class RedmineIssuePanel extends VerticalScrollPane {
                         addCustomField(cfc);
                     }
 
-                    
+
                     return null;
                 }
             });
         }
     }
-   
+
    synchronized void setInfoMessage(String msg) {
       infoLabel.setVisible(msg != null);
       infoLabel.setText(msg);
@@ -739,7 +736,7 @@ public class RedmineIssuePanel extends VerticalScrollPane {
        logtimeSpentTextField.setEnabled(enabled);
        logtimeCommentLabel.setEnabled(enabled);
    }
-   
+
    private void setIssueData(com.taskadapter.redmineapi.bean.Issue issue) {
        issue.setTracker((Tracker) trackerComboBox.getSelectedItem());
        issue.setStatusId(((IssueStatus) statusComboBox.getSelectedItem()).getId());
@@ -773,7 +770,7 @@ public class RedmineIssuePanel extends VerticalScrollPane {
            CustomFieldDefinition cfd = cfc.getCustomFieldDefinition();
            CustomField cf = issue.getCustomFieldById(cfd.getId());
            if (cf == null) {
-               cf = CustomFieldFactory.create(cfd.getId());
+               cf = new CustomField().setId(cfd.getId());
                issue.addCustomField(cf);
            }
            if (cfd.isMultiple()) {
@@ -808,11 +805,11 @@ public class RedmineIssuePanel extends VerticalScrollPane {
         if (issue == null) {
             issue = new Issue();
         }
-        
+
         setIssueData(issue);
-        
+
         final Issue inputIssue = issue;
-        
+
         new SwingWorker() {
 
            @Override
@@ -1214,7 +1211,7 @@ public class RedmineIssuePanel extends VerticalScrollPane {
         issuePane.add(doneLabel, gridBagConstraints);
 
         trackerComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Bug", "Feature", "Support" }));
-        trackerComboBox.setPrototypeDisplayValue(TrackerFactory.create(-1, "A really long tracker prototype"));
+        trackerComboBox.setPrototypeDisplayValue(new Tracker().setId(-1).setName("A really long tracker prototype"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 0;
@@ -1676,7 +1673,7 @@ public class RedmineIssuePanel extends VerticalScrollPane {
             setErrorMessage("Failed to parse '" + hoursString + "' as a float value");
             return;
         }
-        final TimeEntry te = TimeEntryFactory.create();
+        final TimeEntry te = new TimeEntry(redmineIssue.getRepository().getManager().getTransport());
         TimeEntryActivity tea = (TimeEntryActivity) logtimeActivityComboBox.getSelectedItem();
         te.setActivityId(tea.getId());
         te.setComment(logtimeCommentTextField.getText());
@@ -1738,7 +1735,7 @@ public class RedmineIssuePanel extends VerticalScrollPane {
 
     private void addVersion(Project proj, String versionName) {
         try (SafeAutoCloseable sac = redmineIssue.busy()) {
-            Version v = VersionFactory.create(proj.getId(), versionName);
+            Version v = new Version(redmineIssue.getRepository().getManager().getTransport(), proj.getId(), versionName);
             redmineIssue.getRepository().getProjectManager().createVersion(v);
             final Collection<? extends Version> c = redmineIssue.getRepository().reloadVersions(proj);
             for (Version version : c) {
@@ -1760,7 +1757,7 @@ public class RedmineIssuePanel extends VerticalScrollPane {
             LOG.log(Level.WARNING, "Failed to create Version", ex);
         }
     }
-    
+
     private void categoryAddButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_categoryAddButtonActionPerformed
         final NotifyDescriptor.InputLine d = new NotifyDescriptor.InputLine(
                 "New Category label", "Add a new Category");
@@ -1781,7 +1778,7 @@ public class RedmineIssuePanel extends VerticalScrollPane {
 
     private void addCategory(Project proj, String categoryName) {
         try (SafeAutoCloseable sac = redmineIssue.busy()) {
-            IssueCategory ic = IssueCategoryFactory.create(proj.getId(), categoryName);
+            IssueCategory ic = new IssueCategory(redmineIssue.getRepository().getManager().getTransport(), proj.getId(), categoryName);
             redmineIssue.getRepository().getIssueManager().createCategory(ic);
             final Collection<? extends IssueCategory> c = redmineIssue.getRepository().reloadIssueCategories(proj);
             for (IssueCategory issueCategory : c) {
@@ -1803,7 +1800,7 @@ public class RedmineIssuePanel extends VerticalScrollPane {
             LOG.log(Level.WARNING, "Failed to create category", ex);
         }
     }
-    
+
     private void wikiSyntaxButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wikiSyntaxButtonActionPerformed
         try {
             HtmlBrowser.URLDisplayer.getDefault().showURL(new URL(

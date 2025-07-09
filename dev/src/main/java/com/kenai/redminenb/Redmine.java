@@ -1,17 +1,19 @@
 package com.kenai.redminenb;
 
 import com.kenai.redminenb.issue.RedmineIssue;
-import com.kenai.redminenb.issue.RedmineIssuePriorityProvider;
 import com.kenai.redminenb.issue.RedmineIssueProvider;
 import com.kenai.redminenb.issue.RedmineIssueScheduleProvider;
 import com.kenai.redminenb.query.RedmineQuery;
 import com.kenai.redminenb.query.RedmineQueryProvider;
 import com.kenai.redminenb.repository.RedmineRepository;
 import com.kenai.redminenb.repository.RedmineRepositoryProvider;
+
+import org.netbeans.modules.bugtracking.spi.BugtrackingSupport;
+import org.openide.util.ImageUtilities;
+import org.openide.util.NbBundle;
+
 import java.awt.Image;
 import java.util.logging.Logger;
-import org.netbeans.modules.bugtracking.spi.BugtrackingSupport;
-import org.openide.util.*;
 
 /**
  * RedmineNB integration base class.
@@ -24,15 +26,12 @@ public final class Redmine {
     public static final Logger LOG = Logger.getLogger(Redmine.class.getName());
     public static final String IMAGE_PATH = "com/kenai/redminenb/resources/";
     public static final String ICON_IMAGE = "redmine.png";
-
-    private static RedmineIssuePriorityProvider ipp;
     private static volatile RedmineIssueScheduleProvider issp;
-
     private RedmineIssueProvider rip;
     private RedmineQueryProvider rqp;
     private RedmineRepositoryProvider rrp;
     private BugtrackingSupport<RedmineRepository, RedmineQuery, RedmineIssue> support;
-    
+
     private Redmine() {
         // omitted
     }
@@ -46,6 +45,7 @@ public final class Redmine {
 
     private static class Holder {
         private static final Redmine SINGLETON = new Redmine();
+		private Holder() {}
     }
 
     public static Redmine getInstance() {
@@ -79,14 +79,16 @@ public final class Redmine {
     }
 
     public RedmineIssueScheduleProvider getIssueScheduleProvider() {
-        if (issp == null) {
+		RedmineIssueScheduleProvider rmissp = Redmine.issp;
+        if (rmissp == null) {
             synchronized (this) {
-                if (issp == null) {
-                    issp = new RedmineIssueScheduleProvider();
+				rmissp = Redmine.issp;
+                if (rmissp == null) {
+                    Redmine.issp = rmissp = new RedmineIssueScheduleProvider();
                 }
             }
         }
-        return issp;
+        return rmissp;
     }
 
     private RedmineRepositoryProvider getRepositoryProvider() {

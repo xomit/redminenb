@@ -1,7 +1,6 @@
 package com.kenai.redminenb.user;
 
 import com.taskadapter.redmineapi.bean.User;
-import java.util.Objects;
 
 /**
  * A Redmine {@link RepositoryUser repository user}.
@@ -13,7 +12,7 @@ public class RedmineUser {
 
     private final int id;
     private final String username;
-    
+
     /**
      * true if this user is the current logged in user.
      */
@@ -55,20 +54,19 @@ public class RedmineUser {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
         if (obj == null) {
             return false;
         }
+
+        if (this == obj) {
+            return true;
+        }
+
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final RedmineUser other = (RedmineUser) obj;
-        if (this.id != other.id) {
-            return false;
-        }
-        return true;
+
+		return this.id == ((RedmineUser) obj).getId();
     }
 
     public static RedmineUser fromIssue(com.taskadapter.redmineapi.bean.Issue issue) {

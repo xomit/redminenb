@@ -16,15 +16,22 @@
 package com.kenai.redminenb.query;
 
 import com.kenai.redminenb.util.ListListModel;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListModel;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JList;
+import javax.swing.JTextField;
+import javax.swing.ListModel;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import java.util.List;
-import javax.swing.*;
 
 /**
  * GUI-Bindings for Parameter Values
- * 
+ *
  * @author Anchialas <anchialas@gmail.com>
  */
 public abstract class RedmineQueryParameter {
@@ -85,7 +92,7 @@ public abstract class RedmineQueryParameter {
           }
           combo.setSelectedItem(value);
       }
-      
+
       @Override
       public ParameterValue[] getValues() {
          ParameterValue value = (ParameterValue)combo.getSelectedItem();
@@ -95,7 +102,7 @@ public abstract class RedmineQueryParameter {
       public final void setParameterValues(ParameterValue[] values) {
          combo.setModel(new DefaultComboBoxModel(values));
       }
-      
+
       public final void setParameterValues(List<ParameterValue> values) {
          combo.setModel(new DefaultComboBoxModel(values.toArray(new ParameterValue[values.size()])));
       }
@@ -120,7 +127,7 @@ public abstract class RedmineQueryParameter {
          this.list = list;
          //list.setModel(new DefaultListModel());
       }
-      
+
       @Override
       public void setValues(ParameterValue[] values) {
           List<Integer> indices = new ArrayList<>();
@@ -188,9 +195,9 @@ public abstract class RedmineQueryParameter {
       public void setValues(ParameterValue[] values) {
          if(values.length > 0 && values[0] != null) {
             txt.setText(values[0].getValue());
-         } 
+         }
       }
-      
+
       @Override
       public ParameterValue[] getValues() {
          String value = txt.getText();
@@ -241,7 +248,7 @@ public abstract class RedmineQueryParameter {
             this.chk.setSelected(false);
         }
       }
-      
+
       @Override
       public ParameterValue[] getValues() {
          return chk.isSelected() ? SELECTED_VALUE : EMPTY_PARAMETER_VALUE;
@@ -267,7 +274,7 @@ public abstract class RedmineQueryParameter {
          this.values = new String[values.length];
          System.arraycopy(values, 0, this.values, 0, values.length);
       }
-      
+
       @Override
       void setValues(ParameterValue[] values) {
           if(! Arrays.equals(values, EMPTY_PARAMETER_VALUE)) {
@@ -279,7 +286,7 @@ public abstract class RedmineQueryParameter {
               this.values = new String[0];
           }
       }
-      
+
       @Override
       ParameterValue[] getValues() {
          if (values == null || values.length == 0) {

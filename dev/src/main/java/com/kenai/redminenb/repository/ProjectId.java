@@ -59,7 +59,7 @@ public class ProjectId implements Comparable<ProjectId> {
             return false;
         }
         final ProjectId other = (ProjectId) obj;
-        return Objects.equals(id, other.id);
+        return Objects.equals(id, other.getId());
     }
 
     @Override

@@ -19,12 +19,13 @@ import com.kenai.redminenb.Redmine;
 import com.kenai.redminenb.issue.RedmineIssue;
 import com.kenai.redminenb.query.RedmineQuery;
 
-import java.awt.Image;
-import java.beans.PropertyChangeListener;
-import java.util.Collection;
 import org.netbeans.modules.bugtracking.spi.RepositoryController;
 import org.netbeans.modules.bugtracking.spi.RepositoryInfo;
 import org.netbeans.modules.bugtracking.spi.RepositoryProvider;
+
+import java.awt.Image;
+import java.beans.PropertyChangeListener;
+import java.util.Collection;
 
 /**
  * Redmine {@link RepositoryProvider}.
@@ -106,5 +107,4 @@ public class RedmineRepositoryProvider implements RepositoryProvider<RedmineRepo
     public boolean canAttachFiles(RedmineRepository r) {
         return r.canAttachFiles();
     }
-
 }

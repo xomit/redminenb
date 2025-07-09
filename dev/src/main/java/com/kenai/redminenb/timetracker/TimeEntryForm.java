@@ -18,12 +18,15 @@ import com.kenai.redminenb.issue.RedmineIssue;
 import com.kenai.redminenb.ui.Defaults;
 import com.kenai.redminenb.util.TimeUtil;
 import com.taskadapter.redmineapi.bean.TimeEntryActivity;
+
 import javax.swing.DefaultComboBoxModel;
 
 class TimeEntryForm extends javax.swing.JPanel {
 
+	private static final long serialVersionUID = 1L;
+
     private RedmineIssue issue;
-    
+
     /**
      * Creates new form TimeEntryForm
      */
@@ -57,19 +60,19 @@ class TimeEntryForm extends javax.swing.JPanel {
     public void setTime(long time) {
         hoursInput.setText(TimeUtil.millisecondsToDecimalHours(time));
     }
-    
+
     public long getTime() {
         return TimeUtil.decimalHoursToMilliseconds(hoursInput.getText());
     }
-    
+
     public String getComment() {
         return commentInput.getText();
     }
-    
+
     public TimeEntryActivity getTimeEntryActivity() {
         return (TimeEntryActivity) activityInput.getSelectedItem();
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

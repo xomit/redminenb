@@ -15,25 +15,28 @@
  */
 package com.kenai.redminenb.util;
 
-import javax.swing.Action;
 import org.jdesktop.swingx.JXHyperlink;
+
+import javax.swing.Action;
 
 /**
  * @author Matthias Bläsing
  */
 public class LinkButton extends JXHyperlink {
 
-    public LinkButton() {
-        super();
-    }
+	private static final long serialVersionUID = 1L;
 
-    public LinkButton(String text) {
-        super();
-        setText(text);
-    }
+	public LinkButton() {
+		super();
+	}
 
-    public LinkButton(Action a) {
-        super(a);
-    }
+	public LinkButton(String text) {
+		super();
+		setText(text);
+	}
+
+	public LinkButton(Action a) {
+		super(a);
+	}
 
 }

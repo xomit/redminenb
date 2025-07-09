@@ -13,44 +13,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.kenai.redminenb.util;
 
 import com.kenai.redminenb.user.RedmineUser;
 import com.taskadapter.redmineapi.bean.Group;
 import com.taskadapter.redmineapi.bean.User;
-import java.awt.Component;
+
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
+
+import java.awt.Component;
 
 /**
  * @author Matthias Bläsing
  */
-public class TableCellRendererUser extends DefaultTableCellRenderer{
+public class TableCellRendererUser extends DefaultTableCellRenderer {
 
-    @Override
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        if(value instanceof RedmineUser) {
-            value = ((RedmineUser) value).toString();
-        } else if(value instanceof User) {
-            User user = (User) value;
-            StringBuilder stringValue = new StringBuilder();
-            if(user.getFirstName() != null) {
-                stringValue.append(user.getFirstName());
-            }
-            if(user.getLastName() != null) {
-                if(stringValue.length() != 0) {
-                    stringValue.append(" ");
-                }
-                stringValue.append(user.getLastName());
-            }
-            value = stringValue.toString();
-        } else if (value instanceof Group) {
-            value = ((Group) value).getName();
-        } else if (value instanceof AssigneeWrapper) {
-            value = ((AssigneeWrapper) value).getName();
-        }
-        return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-    }
-    
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+		if (value instanceof RedmineUser) {
+			value = value.toString();
+		} else if (value instanceof User) {
+			User user = (User) value;
+			StringBuilder stringValue = new StringBuilder();
+			if (user.getFirstName() != null) {
+				stringValue.append(user.getFirstName());
+			}
+			if (user.getLastName() != null) {
+				if (stringValue.length() != 0) {
+					stringValue.append(" ");
+				}
+				stringValue.append(user.getLastName());
+			}
+			value = stringValue.toString();
+		} else if (value instanceof Group) {
+			value = ((Group) value).getName();
+		} else if (value instanceof AssigneeWrapper) {
+			value = ((AssigneeWrapper) value).getName();
+		}
+		return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+	}
 }

@@ -2,8 +2,9 @@ package com.kenai.redminenb.util;
 
 import com.kenai.redminenb.RedmineConfig;
 
-import java.util.prefs.Preferences;
 import org.openide.util.NbPreferences;
+
+import java.util.prefs.Preferences;
 
 /**
  *
@@ -15,4 +16,6 @@ public class RedminePreferences {
         return NbPreferences.forModule(RedmineConfig.class);
     }
 
+	private RedminePreferences() {
+	}
 }

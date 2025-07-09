@@ -22,6 +22,18 @@ import com.kenai.redminenb.util.SafeAutoCloseable;
 import com.taskadapter.redmineapi.Include;
 import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.bean.Attachment;
+
+import org.apache.commons.lang3.StringUtils;
+import org.netbeans.modules.bugtracking.api.Issue;
+import org.netbeans.modules.bugtracking.spi.IssueController;
+import org.netbeans.modules.bugtracking.spi.IssueScheduleInfo;
+import org.netbeans.modules.bugtracking.spi.IssueStatusProvider;
+import org.openide.util.Mutex;
+import org.openide.util.NbBundle.Messages;
+
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
@@ -30,15 +42,6 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
-import org.apache.commons.lang.StringUtils;
-import org.netbeans.modules.bugtracking.api.Issue;
-import org.netbeans.modules.bugtracking.spi.IssueController;
-import org.netbeans.modules.bugtracking.spi.IssueScheduleInfo;
-import org.netbeans.modules.bugtracking.spi.IssueStatusProvider;
-import org.openide.util.Mutex;
-import org.openide.util.NbBundle.Messages;
 
 /**
  *
@@ -139,16 +142,13 @@ public final class RedmineIssue {
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         support.removePropertyChangeListener(listener);
     }
-    
+
     private Integer busy = 0;
-    
-    private final SafeAutoCloseable busyHelper = new SafeAutoCloseable() {
-        @Override
-        public void close() {
-            setBusy(false);
-        }
-    };
-    
+
+    private final SafeAutoCloseable busyHelper = () -> {
+		setBusy(false);
+	};
+
     public SafeAutoCloseable busy() {
         setBusy(true);
         return busyHelper;
@@ -157,7 +157,7 @@ public final class RedmineIssue {
     public synchronized boolean isBusy() {
         return busy != 0;
     }
-    
+
     private synchronized void setBusy(boolean busyBool) {
         final boolean oldBusy = isBusy();
         if (busyBool) {
@@ -168,12 +168,9 @@ public final class RedmineIssue {
         if (busy < 0) {
             throw new IllegalStateException("Inbalanced busy/nonbusy");
         }
-        Mutex.EVENT.writeAccess(new Runnable() {
-            @Override
-            public void run() {
-                 support.firePropertyChange("busy", oldBusy, busy != 0);
-            }
-        });
+        Mutex.EVENT.writeAccess(() -> {
+			support.firePropertyChange("busy", oldBusy, busy != 0);
+		});
     }
 
     public String getDisplayName() {
@@ -272,11 +269,11 @@ public final class RedmineIssue {
 
             if (resolve) {
                 // TODO This works for default Redmine Settings only. Add resolved status ID configuration to Redmine Option.
-                issue.setStatusId(3);    
+                issue.setStatusId(3);
             }
-            
+
             getRepository().getIssueManager().update(issue);
-            
+
             return;
 
         } catch (RedmineException | RuntimeException ex) {
@@ -362,8 +359,8 @@ public final class RedmineIssue {
         }
         getRepository().getRequestProcessor().execute(issueUpdate);
     }
-    
-    private Runnable issueUpdate = new Runnable() {
+
+    private final Runnable issueUpdate = new Runnable() {
         @Override
         public void run() {
             try {

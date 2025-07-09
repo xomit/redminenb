@@ -15,13 +15,13 @@
  */
 package com.kenai.redminenb.util.markup;
 
+import org.eclipse.mylyn.wikitext.parser.Attributes;
+import org.eclipse.mylyn.wikitext.parser.MarkupParser;
+import org.eclipse.mylyn.wikitext.parser.builder.HtmlDocumentBuilder;
+import org.eclipse.mylyn.wikitext.textile.TextileLanguage;
+
 import java.io.StringWriter;
 import java.io.Writer;
-import org.eclipse.mylyn.wikitext.core.parser.Attributes;
-import org.eclipse.mylyn.wikitext.core.parser.DocumentBuilder;
-import org.eclipse.mylyn.wikitext.core.parser.MarkupParser;
-import org.eclipse.mylyn.wikitext.core.parser.builder.HtmlDocumentBuilder;
-import org.eclipse.mylyn.wikitext.textile.core.TextileLanguage;
 
 /**
  * Textile Wiki Markup utility.
@@ -43,12 +43,11 @@ public final class TextileUtil {
         convertToHTML(textile, writer);
         return writer.toString();
     }
-    
+
     public static void convertToHTML(String textile, Writer writer) {
         HtmlDocumentBuilder builder = new HtmlDocumentBuilder(writer) {
-
             @Override
-            public void beginSpan(DocumentBuilder.SpanType type, Attributes attributes) {
+			public void beginSpan(SpanType type, Attributes attributes) {
                 // Work-around java limit for html rendering - map:
                 // - <del>XY</del> to <span style='text-decoration: line-through'>XY</span>
                 if(type == SpanType.DELETED) {
@@ -60,7 +59,7 @@ public final class TextileUtil {
                 }
                 super.beginSpan(type, attributes);
             }
-            
+
         };
         // avoid the <html> and <body> tags
         builder.setEmitAsDocument(false);
@@ -80,5 +79,8 @@ public final class TextileUtil {
             markupParser.setMarkupLanguage(new TextileLanguage());
             return markupParser;
         }
+
+		private LazyHolder() {
+		}
     }
 }

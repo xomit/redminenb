@@ -15,36 +15,38 @@
  */
 package com.kenai.redminenb.util;
 
-import java.awt.Dimension;
-import java.awt.Rectangle;
 import javax.swing.JPanel;
 import javax.swing.Scrollable;
 
+import java.awt.Dimension;
+import java.awt.Rectangle;
+
 public class VerticalScrollPane extends JPanel implements Scrollable {
 
-    @Override
-    public Dimension getPreferredScrollableViewportSize() {
-        return getPreferredSize();
-    }
+	private static final long serialVersionUID = 1L;
 
-    @Override
-    public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
-        return 20;
-    }
+	@Override
+	public Dimension getPreferredScrollableViewportSize() {
+		return getPreferredSize();
+	}
 
-    @Override
-    public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
-        return 60;
-    }
+	@Override
+	public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
+		return 20;
+	}
 
-    @Override
-    public boolean getScrollableTracksViewportWidth() {
-        return true;
-    }
+	@Override
+	public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
+		return 60;
+	}
 
-    @Override
-    public boolean getScrollableTracksViewportHeight() {
-        return false;
-    }
-    
+	@Override
+	public boolean getScrollableTracksViewportWidth() {
+		return true;
+	}
+
+	@Override
+	public boolean getScrollableTracksViewportHeight() {
+		return false;
+	}
 }

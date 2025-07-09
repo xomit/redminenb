@@ -18,36 +18,37 @@ package com.kenai.redminenb.repository;
 
 import com.kenai.redminenb.issue.RedmineIssue;
 import com.taskadapter.redmineapi.bean.Issue;
+
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Cache class to ensure issues are only opened/used once.
- * 
+ *
  * Every time a new RedmineIssue is to be created from backend issue data
  * the creation process has to go through cachedRedmineIssue. That method
  * is synchronized, so even if to threads try to create a RedmineIssue in
  * parallel from the same backend data they will get the same RedmineIssue
  * instance.
- * 
+ *
  * @author matthias
  */
 public class IssueCache {
-    private RedmineRepository repository;
+    private final RedmineRepository repository;
     private final Map<String,WeakReference<RedmineIssue>> cache = new HashMap<>();
 
     public IssueCache(RedmineRepository repository) {
         this.repository = repository;
     }
-    
+
     /**
-     * Access cached RedmineIssue by ID. 
-     * 
+     * Access cached RedmineIssue by ID.
+     *
      * ID is in this case Integer, as the redmie api uses integer ids.
-     * 
+     *
      * @param id
-     * @return 
+     * @return
      */
     public RedmineIssue get(Integer id) {
         if(id == null) {
@@ -56,14 +57,14 @@ public class IssueCache {
             return get(id.toString());
         }
     }
-    
+
     /**
-     * Access cached RedmineIssue by ID. 
-     * 
+     * Access cached RedmineIssue by ID.
+     *
      * ID is in this case string, as the issue uses string ids.
-     * 
+     *
      * @param id
-     * @return 
+     * @return
      */
     public RedmineIssue get(String id) {
         WeakReference<RedmineIssue> valueReference = cache.get(id);
@@ -73,13 +74,13 @@ public class IssueCache {
             return valueReference.get();
         }
     }
-    
+
     /**
      * Place a RedmineIssue into the issue cache.
-     * 
+     *
      * This method may only be called when a new RedmineIssue is persisted.
-     * 
-     * @param ri 
+     *
+     * @param ri
      */
     public synchronized void put(RedmineIssue ri) {
         if(ri.getID() == null || "0".equals(ri.getID())) {
@@ -87,14 +88,14 @@ public class IssueCache {
         }
         cache.put(ri.getID(), new WeakReference<>(ri));
     }
-    
+
     /**
-     * If the supplied issue data is already associated with a RedmineIssue 
+     * If the supplied issue data is already associated with a RedmineIssue
      * instance, that instance is returned, else a new RedmineIssue is created
      * and cached.
-     * 
+     *
      * @param issue backend issue data
-     * @return 
+     * @return
      */
     public synchronized RedmineIssue cachedRedmineIssue(Issue issue) {
         RedmineIssue cached = get(issue.getId());

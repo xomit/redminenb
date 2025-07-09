@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.kenai.redminenb.issue;
 
 import com.kenai.redminenb.RedmineConfig;
 import com.kenai.redminenb.repository.RedmineRepository;
 import com.taskadapter.redmineapi.bean.IssuePriority;
-import java.util.ArrayList;
-import java.util.List;
+
 import org.netbeans.modules.bugtracking.spi.IssuePriorityInfo;
 import org.netbeans.modules.bugtracking.spi.IssuePriorityProvider;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -30,30 +31,30 @@ import org.netbeans.modules.bugtracking.spi.IssuePriorityProvider;
  */
 public class RedmineIssuePriorityProvider implements IssuePriorityProvider<RedmineIssue> {
 
-    private final RedmineRepository repo;
+	private final RedmineRepository repo;
 
-    public RedmineIssuePriorityProvider(RedmineRepository repo) {
-        this.repo = repo;
-    }
-    
-    @Override
-    public String getPriorityID(RedmineIssue i) {
-        return i.getIssue().getPriorityId().toString();
-    }
+	public RedmineIssuePriorityProvider(RedmineRepository repo) {
+		this.repo = repo;
+	}
 
-    @Override
-    public IssuePriorityInfo[] getPriorityInfos() {
-        List<IssuePriorityInfo> lipi = new ArrayList<>();
-        for (IssuePriority ip : repo.getIssuePriorities()) {
-            IssuePriorityInfo ipi = new IssuePriorityInfo(
-                    ip.getId().toString(), 
-                    ip.getName(),
-                    RedmineConfig.getInstance().getPriorityImage(ip.getName())
-            );
-            lipi.add(ipi);
-        }
-        return lipi.toArray(new IssuePriorityInfo[lipi.size()]);
+	@Override
+	public String getPriorityID(RedmineIssue i) {
+		return i.getIssue().getPriorityId().toString();
+	}
 
-    }
+	@Override
+	public IssuePriorityInfo[] getPriorityInfos() {
+		final List<IssuePriorityInfo> lipi = new ArrayList<>();
 
+		for (IssuePriority ip : repo.getIssuePriorities()) {
+			IssuePriorityInfo ipi = new IssuePriorityInfo(
+				ip.getId().toString(),
+				ip.getName(),
+				RedmineConfig.getInstance().getPriorityImage(ip.getName())
+			);
+			lipi.add(ipi);
+		}
+
+		return lipi.toArray(IssuePriorityInfo[]::new);
+	}
 }

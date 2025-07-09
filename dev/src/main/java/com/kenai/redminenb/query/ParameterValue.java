@@ -15,13 +15,15 @@
  */
 package com.kenai.redminenb.query;
 
+import org.netbeans.api.annotations.common.NonNull;
+import org.openide.util.NbBundle;
+
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import org.netbeans.api.annotations.common.NonNull;
-import org.openide.util.NbBundle;
 
 /**
  * Immutable class representing a parameter value and displayName (both non-null).
@@ -34,13 +36,10 @@ public class ParameterValue {
 
    static final String NONE_VALUE = "!*";
    static final ParameterValue NONE_PARAMETERVALUE = new ParameterValue(Bundle.LBL_PVNone(), NONE_VALUE);
-   
+
    private String displayName;
    private String value;
 
-   private ParameterValue() {
-   }
-   
    public ParameterValue(@NonNull String value) {
       this(value, value);
    }
@@ -94,21 +93,21 @@ public class ParameterValue {
          return false;
       }
       ParameterValue other = (ParameterValue)obj;
-      return value.equals(other.value); // value cannot be null!
+      return value.equals(other.getValue()); // value cannot be null!
    }
 
    @Override
    public int hashCode() {
       return value.hashCode(); // value cannot be null!
    }
-   
+
    public static String flattenList(ParameterValue... pvs) {
        if(pvs == null) {
            return "";
        }
        return flattenList(Arrays.asList(pvs));
    }
-   
+
    public static String flattenList(List<ParameterValue> pvs) {
         StringBuilder sb = new StringBuilder();
         for (ParameterValue pv : pvs) {

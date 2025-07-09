@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.kenai.redminenb.issue;
 
-import java.util.Date;
 import org.netbeans.modules.bugtracking.spi.IssueScheduleInfo;
 import org.netbeans.modules.bugtracking.spi.IssueScheduleProvider;
+
+import java.util.Date;
 
 /**
  *
@@ -26,19 +26,19 @@ import org.netbeans.modules.bugtracking.spi.IssueScheduleProvider;
  */
 public class RedmineIssueScheduleProvider implements IssueScheduleProvider<RedmineIssue> {
 
-    @Override
-    public void setSchedule(RedmineIssue i, IssueScheduleInfo scheduleInfo) {
-        i.setSchedule(scheduleInfo);
-    }
+	@Override
+	public void setSchedule(RedmineIssue i, IssueScheduleInfo scheduleInfo) {
+		i.setSchedule(scheduleInfo);
+	}
 
-    @Override
-    public Date getDueDate(RedmineIssue i) {
-        return i.getDueDate();
-    }
+	@Override
+	public Date getDueDate(RedmineIssue i) {
+		return i.getDueDate();
+	}
 
-    @Override
-    public IssueScheduleInfo getSchedule(RedmineIssue i) {
-        return i.getSchedule();
-    }
+	@Override
+	public IssueScheduleInfo getSchedule(RedmineIssue i) {
+		return i.getSchedule();
+	}
 
 }

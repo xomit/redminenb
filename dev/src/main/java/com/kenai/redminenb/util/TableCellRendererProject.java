@@ -13,33 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.kenai.redminenb.util;
 
 import com.taskadapter.redmineapi.bean.Project;
-import java.awt.Component;
+
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import java.awt.Component;
 
-public class TableCellRendererProject extends DefaultTableCellRenderer{
+public class TableCellRendererProject extends DefaultTableCellRenderer {
 
-    @Override
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        if (value instanceof NestedProject) {
-            value = ((NestedProject) value).toString();
-        } else if (value instanceof Project) {
-            Project p = (Project) value;
-            value = p.getName() + "(ID: " + p.getId() + ")";
-        } else if (value == null) {
-            value = " ";
-        } else {
-            value = value.toString();
-            if ("".equals(value)) {
-                value = " ";
-            }
-        }
-        return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-    }
-    
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+		if (value instanceof NestedProject) {
+			value = value.toString();
+		} else if (value instanceof Project) {
+			Project p = (Project) value;
+			value = p.getName() + "(ID: " + p.getId() + ")";
+		} else if (value == null) {
+			value = " ";
+		} else {
+			value = value.toString();
+			if ("".equals(value)) {
+				value = " ";
+			}
+		}
+		return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+	}
 }

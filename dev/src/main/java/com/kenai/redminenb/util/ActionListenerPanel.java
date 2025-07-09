@@ -1,9 +1,11 @@
 package com.kenai.redminenb.util;
 
-import java.awt.event.ActionListener;
+import org.openide.DialogDescriptor;
+
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import org.openide.DialogDescriptor;
+
+import java.awt.event.ActionListener;
 
 /**
  *
@@ -11,6 +13,7 @@ import org.openide.DialogDescriptor;
  */
 public abstract class ActionListenerPanel extends JPanel implements ActionListener {
 
+	private static final long serialVersionUID = 1L;
     protected JButton okButton;
     protected JButton cancelButton;
     protected DialogDescriptor dialogDescribtor;

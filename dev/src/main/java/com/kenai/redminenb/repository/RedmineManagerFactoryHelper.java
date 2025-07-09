@@ -13,23 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.kenai.redminenb.repository;
 
 import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.internal.Transport;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.net.ProxySelector;
-import java.security.AccessController;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivilegedAction;
-import java.security.cert.X509Certificate;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocket;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLSocketFactory;
@@ -37,21 +25,33 @@ import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.SystemDefaultRoutePlanner;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
+
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.net.ProxySelector;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
+
 class RedmineManagerFactoryHelper {
 
-    public static HttpClient getTransportConfig() {
-        /**
-     * Implement a minimal hostname verifier. This is needed to be able to use
-     * hosts with certificates, that don't match the used hostname (VServer).
-         *
-         * This is implemented by first trying the "Browser compatible" hostname
-         * verifier and if that fails, fall back to the default java hostname
-         * verifier.
-         *
-         * If the default case the hostname verifier in java always rejects, but
-         * for netbeans the "SSL Certificate Exception" module is available that
-         * catches this and turns a failure into a request to the GUI user.
-         */
+	public static HttpClient getTransportConfig() {
+		/**
+		 * Implement a minimal hostname verifier. This is needed to be able to use
+		 * hosts with certificates, that don't match the used hostname (VServer).
+		 *
+		 * This is implemented by first trying the "Browser compatible" hostname
+		 * verifier and if that fails, fall back to the default java hostname
+		 * verifier.
+		 *
+		 * If the default case the hostname verifier in java always rejects, but
+		 * for netbeans the "SSL Certificate Exception" module is available that
+		 * catches this and turns a failure into a request to the GUI user.
+		 */
         X509HostnameVerifier hostnameverified = new X509HostnameVerifier() {
             @Override
             public void verify(String string, SSLSocket ssls) throws IOException {
@@ -76,39 +76,36 @@ class RedmineManagerFactoryHelper {
             @Override
             public boolean verify(String string, SSLSession ssls) {
                 if (SSLSocketFactory.BROWSER_COMPATIBLE_HOSTNAME_VERIFIER.verify(string, ssls)) {
-                    return true;
-                }
-                return HttpsURLConnection.getDefaultHostnameVerifier().verify(string, ssls);
+				return true;
+			}
+			return HttpsURLConnection.getDefaultHostnameVerifier().verify(string, ssls);
             }
-        };
+		};
 
-        try {
-            SSLConnectionSocketFactory scsf = new SSLConnectionSocketFactory(SSLContext.getDefault(), hostnameverified);
+		try {
+			SSLConnectionSocketFactory scsf = new SSLConnectionSocketFactory(SSLContext.getDefault(), hostnameverified);
 
             HttpClient hc = HttpClientBuilder.create()
                     .setRoutePlanner(new SystemDefaultRoutePlanner(ProxySelector.getDefault()))
                     .setSSLSocketFactory(scsf)
                     .build();
 
-            return hc;
-        } catch (NoSuchAlgorithmException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-    
-    public static Transport getTransportFromManager(final RedmineManager rm) {
-        return AccessController.doPrivileged(new PrivilegedAction<Transport>() {
+			return hc;
+		} catch (NoSuchAlgorithmException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
 
-            @Override
-            public Transport run() {
-                try {
-                    Field transportField = RedmineManager.class.getDeclaredField("transport");
-                    transportField.setAccessible(true);
-                    return (Transport) transportField.get(rm);
-                } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
-                    throw new RuntimeException("Failed to get transport from redmine manager", ex);
-                }
-            }
-        });
-    }
+	public static Transport getTransportFromManager(final RedmineManager rm) {
+		try {
+			Field transportField = RedmineManager.class.getDeclaredField("transport");
+			transportField.setAccessible(true);
+			return (Transport) transportField.get(rm);
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
+			throw new RuntimeException("Failed to get transport from redmine manager", ex);
+		}
+	}
+
+	private RedmineManagerFactoryHelper() {
+	}
 }

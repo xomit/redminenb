@@ -5,11 +5,23 @@ import com.kenai.redminenb.query.RedmineQuery;
 import com.kenai.redminenb.query.serialization.RedmineQueryXml;
 import com.kenai.redminenb.repository.RedmineRepository;
 import com.kenai.redminenb.ui.Defaults;
-import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.bean.Project;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.awt.Image;
 
+import org.openide.filesystems.FileLock;
+import org.openide.filesystems.FileObject;
+import org.openide.filesystems.FileUtil;
+import org.openide.util.NbPreferences;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
+
+import javax.swing.Icon;
+
+import java.awt.Image;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -30,15 +42,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
-import javax.swing.Icon;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import org.openide.filesystems.FileLock;
-import org.openide.filesystems.FileObject;
-import org.openide.filesystems.FileUtil;
-import org.openide.util.NbPreferences;
 
 /**
  *
@@ -57,8 +60,7 @@ public class RedmineConfig {
     private static final String CHECK_UPDATES = "redmine.check_updates";             // NOI18N
     private static final String LAST_CHANGE_FROM = "redmine.last_change_from";       // NOI18N
     private static final String ACTIONITEMISSUES_STORAGE = "actionitemissues"; //NOI18N
-    private static final String ACTIONITEMISSUES_STORAGE_FILE = ACTIONITEMISSUES_STORAGE
-            + ".data"; //NOI18N
+    private static final String ACTIONITEMISSUES_STORAGE_FILE = ACTIONITEMISSUES_STORAGE + ".data"; //NOI18N
     //
     public static final int DEFAULT_QUERY_REFRESH = 30;
     public static final int DEFAULT_ISSUE_REFRESH = 15;
@@ -68,9 +70,7 @@ public class RedmineConfig {
     static {
         JAXBContext tempJaxbContext = null;
         try {
-            tempJaxbContext = JAXBContext.newInstance(
-                    "com.kenai.redminenb.query.serialization",
-                    RedmineConfig.class.getClassLoader());
+            tempJaxbContext = JAXBContext.newInstance("com.kenai.redminenb.query.serialization", RedmineConfig.class.getClassLoader());
         } catch (JAXBException ex) {
             LOG.log(Level.WARNING, "Failed to initialize MantisQuery saving", ex);
         }
@@ -123,20 +123,19 @@ public class RedmineConfig {
     public void putQuery(RedmineRepository repository, RedmineQuery query) {
         putQuery(repository, new RedmineQueryXml(query), query.getDisplayName());
     }
-    
+
     private void putQuery(RedmineRepository repository, RedmineQueryXml xml, String name) {
         try (StringWriter sw = new StringWriter()) {
             Marshaller marshaller = jaxbContext.createMarshaller();
             marshaller.marshal(xml, sw);
-            getPreferences().put(getQueryKey(repository.getID(), name),
-                    sw.toString());
+            getPreferences().put(getQueryKey(repository.getID(), name), sw.toString());
         } catch (JAXBException ex) {
             LOG.log(Level.WARNING, "Failed to serialize data", ex);
         } catch (IOException ex) {
             LOG.log(Level.WARNING, "Could not open file: {0}", ex);
         }
     }
-    
+
     public void removeQuery(RedmineRepository repository, String displayName) {
         getPreferences().remove(getQueryKey(repository.getID(), displayName));
     }
@@ -160,7 +159,7 @@ public class RedmineConfig {
         }
         rqx.toRedmineQuery(rq);
     }
-    
+
     public RedmineQuery getQuery(RedmineRepository repository, String queryName) {
         RedmineQueryXml rqx = loadSerializedQuery(repository, queryName);
         if(rqx == null) {
@@ -177,7 +176,7 @@ public class RedmineConfig {
         if (value == null) {
             return null;
         }
-        try (StringWriter sw = new StringWriter()) {
+        try {
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             Object o = unmarshaller.unmarshal(new StringReader(value));
             if (o instanceof RedmineQueryXml) {
@@ -185,13 +184,11 @@ public class RedmineConfig {
                 boolean modified = false;
                 // Version 2 of the serialization format introduced the project
                 // parameter, that was previously taken from the project settings
-                // this conversion sets the project based on the 
+                // this conversion sets the project based on the
                 if(rqx.getVersion() == 1) {
                     Project p = repository.getProject();
                     if( p != null && (! rqx.getParameters().containsKey("project_id"))) {
-                        rqx.getParameters().put("project_id", new ParameterValue[]{
-                            new ParameterValue(p.getName(), p.getId())
-                        });
+                        rqx.getParameters().put("project_id", new ParameterValue[]{ new ParameterValue(p.getName(), p.getId()) });
                         modified = true;
                     }
                 }
@@ -202,12 +199,11 @@ public class RedmineConfig {
             }
         } catch (JAXBException ex) {
             LOG.log(Level.WARNING, "Failed to serialize data", ex);
-        } catch (IOException ex) {
-            LOG.log(Level.WARNING, "Could not open file: {0}", ex);
         }
+
         return null;
     }
-    
+
     public boolean getCheckUpdates() {
         return getPreferences().getBoolean(CHECK_UPDATES, true);
     }
@@ -236,7 +232,7 @@ public class RedmineConfig {
     }
 
     public String getLastChangeFrom() {
-        return getPreferences().get(LAST_CHANGE_FROM, "");                      // NOI18N
+        return getPreferences().get(LAST_CHANGE_FROM, ""); // NOI18N
     }
 
     public Icon getPriorityIcon(String priorityName) {
@@ -262,14 +258,13 @@ public class RedmineConfig {
         }
         return priorityImages.get(priorityName);
     }
-    
+
     /**
      * Saves issue ActionItem's permanently.
      *
      * @param issues
      */
-    @SuppressFBWarnings(value="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE", 
-            justification = "If mkdirs fails it is checked one line further")
+    @SuppressFBWarnings(value="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE", justification = "If mkdirs fails it is checked one line further")
     public void setActionItemIssues(HashMap<String, List<String>> issues) {
         Redmine.LOG.fine("setActionItemIssues: saving issues");              //NOI18N
         File f = new File(getConfigPath());
@@ -387,7 +382,7 @@ public class RedmineConfig {
     }
 
     private static class LazyHolder {
-
         private static final RedmineConfig INSTANCE = new RedmineConfig();
+		private LazyHolder() {}
     }
 }

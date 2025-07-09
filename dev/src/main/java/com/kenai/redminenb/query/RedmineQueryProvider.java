@@ -71,5 +71,4 @@ public class RedmineQueryProvider implements QueryProvider<RedmineQuery, Redmine
     public void setIssueContainer(RedmineQuery q, IssueContainer<RedmineIssue> ic) {
         q.setIssueContainer(ic);
     }
-
 }

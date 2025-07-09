@@ -20,9 +20,11 @@ import com.kenai.redminenb.user.RedmineUser;
 import com.kenai.redminenb.util.ListListModel;
 import com.kenai.redminenb.util.WatcherComparator;
 import com.taskadapter.redmineapi.bean.Watcher;
-import com.taskadapter.redmineapi.bean.WatcherFactory;
+
+import javax.swing.RowFilter;
+import javax.swing.event.ListSelectionEvent;
+
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -33,30 +35,29 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
-import javax.swing.RowFilter;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 
 public class WatchersEditorFrame extends javax.swing.JPanel {
 
+	private static final long serialVersionUID = 1L;
+
     public WatchersEditorFrame(List<Watcher> currentWatchers, Collection<RedmineUser> users) {
         initComponents();
-        
+
         Set<Integer> watcherIds = new HashSet<>();
         for(Watcher w: currentWatchers) {
             watcherIds.add(w.getId());
         }
-        
+
         List<Watcher> potentialWatchers = new ArrayList<>();
         for(RedmineUser ru: users) {
             if(! watcherIds.contains(ru.getId())) {
-                Watcher w = WatcherFactory.create(ru.getId());
+                Watcher w = new Watcher().setId(ru.getId());
                 w.setName(ru.toString());
                 potentialWatchers.add(w);
             }
         }
-        
+
         getAvailableUsersModel().addAll(potentialWatchers);
         getWatchersModel().addAll(currentWatchers);
 
@@ -71,9 +72,9 @@ public class WatchersEditorFrame extends javax.swing.JPanel {
                 }
                 availableList.setRowFilter(rf);
             }
-            
+
         });
-        
+
         watchersFilter.addKeyListener(new KeyAdapter() {
 
             @Override
@@ -85,45 +86,29 @@ public class WatchersEditorFrame extends javax.swing.JPanel {
                 }
                 watchersList.setRowFilter(rf);
             }
-            
-        });
-        
-        addButton.addActionListener(new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                for(Object watcherObject: availableList.getSelectedValues()) {
-                    addWatcher((Watcher) watcherObject);
-                }
-            }
         });
-        
-        removeButton.addActionListener(new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                for(Object watcherObject: watchersList.getSelectedValues()) {
-                    removeWatcher((Watcher) watcherObject);
-                }
-            }
-        });
-        
-        availableList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+        addButton.addActionListener((ActionEvent e) -> {
+			for(Object watcherObject: availableList.getSelectedValues()) {
+				addWatcher((Watcher) watcherObject);
+			}
+		});
 
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                addButton.setEnabled(availableList.getSelectedValues().length > 0);
-            }
-        });
-        
-        watchersList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+        removeButton.addActionListener((ActionEvent e) -> {
+			for(Object watcherObject: watchersList.getSelectedValues()) {
+				removeWatcher((Watcher) watcherObject);
+			}
+		});
 
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                removeButton.setEnabled(watchersList.getSelectedValues().length > 0);
-            }
-        });
-        
+        availableList.getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
+			addButton.setEnabled(availableList.getSelectedValues().length > 0);
+		});
+
+        watchersList.getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
+			removeButton.setEnabled(watchersList.getSelectedValues().length > 0);
+		});
+
         watchersList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -134,7 +119,7 @@ public class WatchersEditorFrame extends javax.swing.JPanel {
                 }
             }
         });
-        
+
         availableList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -145,7 +130,7 @@ public class WatchersEditorFrame extends javax.swing.JPanel {
                 }
             }
         });
-        
+
         watchersList.addKeyListener(new KeyAdapter() {
 
             @Override
@@ -156,9 +141,9 @@ public class WatchersEditorFrame extends javax.swing.JPanel {
                     }
                 }
             }
-            
+
         });
-        
+
         availableList.addKeyListener(new KeyAdapter() {
 
             @Override
@@ -169,34 +154,37 @@ public class WatchersEditorFrame extends javax.swing.JPanel {
                     }
                 }
             }
-            
+
         });
     }
 
     private void removeWatcher(Watcher watcherObject) {
-        getWatchersModel().remove((Watcher) watcherObject);
-        getAvailableUsersModel().add((Watcher) watcherObject);
+        getWatchersModel().remove(watcherObject);
+        getAvailableUsersModel().add(watcherObject);
     }
-    
+
     private void addWatcher(Watcher watcherObject) {
-        getWatchersModel().add((Watcher) watcherObject);
-        getAvailableUsersModel().remove((Watcher) watcherObject);
+        getWatchersModel().add(watcherObject);
+        getAvailableUsersModel().remove(watcherObject);
     }
-    
+
+	@SuppressWarnings("unchecked")
     private ListListModel<Watcher> getAvailableUsersModel() {
         return (ListListModel<Watcher>) availableList.getModel();
     }
 
+	@SuppressWarnings("unchecked")
     private ListListModel<Watcher> getWatchersModel() {
         return (ListListModel<Watcher>) watchersList.getModel();
     }
 
     public List<Watcher> getWatchers() {
+		@SuppressWarnings("unchecked")
         List<Watcher> result = new ArrayList(getWatchersModel().getSize());
         result.addAll(getWatchersModel().getElements());
         return result;
     }
-            
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

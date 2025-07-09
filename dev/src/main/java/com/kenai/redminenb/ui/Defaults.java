@@ -28,18 +28,21 @@ import com.taskadapter.redmineapi.bean.TimeEntryActivity;
 import com.taskadapter.redmineapi.bean.Tracker;
 import com.taskadapter.redmineapi.bean.Version;
 import com.taskadapter.redmineapi.bean.Watcher;
+
+import org.openide.util.ImageUtilities;
+
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JSeparator;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.Icon;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JSeparator;
-import org.openide.util.ImageUtilities;
 
 /**
  * RedmineNB UI Defaults.
@@ -61,7 +64,7 @@ public class Defaults {
     public static Icon getIcon(String iconBaseName) {
         return ImageUtilities.loadImageIcon("com/kenai/redminenb/resources/" + iconBaseName, false);
     }
-    
+
     public static Image getImage(String iconBaseName) {
         return ImageUtilities.loadImage("com/kenai/redminenb/resources/" + iconBaseName, false);
     }
@@ -79,8 +82,10 @@ public class Defaults {
 
     public static class TrackerLCR extends DefaultListCellRenderer {
 
+		private static final long serialVersionUID = 1L;
+
         @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             if (value instanceof Tracker) {
                 value = ((Tracker) value).getName();
             }
@@ -90,8 +95,10 @@ public class Defaults {
 
     public static class IssueStatusLCR extends DefaultListCellRenderer {
 
+		private static final long serialVersionUID = 1L;
+
         @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             if (value != null) {
                 value = ((IssueStatus) value).getName();
             }
@@ -101,8 +108,10 @@ public class Defaults {
 
     public static class IssueCategoryLCR extends DefaultListCellRenderer {
 
+		private static final long serialVersionUID = 1L;
+
         @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             if (value instanceof IssueCategory) {
                 value = ((IssueCategory) value).getName();
             } else {
@@ -116,8 +125,10 @@ public class Defaults {
 
     public static class VersionLCR extends DefaultListCellRenderer {
 
+		private static final long serialVersionUID = 1L;
+
         @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             if (value instanceof Version) {
                 value = ((Version) value).getName();
             } else {
@@ -131,8 +142,10 @@ public class Defaults {
 
     public static class RepositoryUserLCR extends DefaultListCellRenderer {
 
+		private static final long serialVersionUID = 1L;
+
         @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             boolean isCurrentUser = false;
             boolean notNull = false;
             if (value instanceof ParameterValue) {
@@ -163,8 +176,10 @@ public class Defaults {
 
     public static class PriorityLCR extends DefaultListCellRenderer {
 
+		private static final long serialVersionUID = 1L;
+
         @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             if (value instanceof IssuePriority) {
                 value = ((IssuePriority) value).getName();
             } else if (value instanceof ParameterValue) {
@@ -183,8 +198,10 @@ public class Defaults {
 
     public static class ParameterValueLCR extends DefaultListCellRenderer {
 
+		private static final long serialVersionUID = 1L;
+
         @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             if (value instanceof ParameterValue) {
                 value = ((ParameterValue) value).getDisplayName();
                 if (value == null) {
@@ -197,8 +214,10 @@ public class Defaults {
 
     public static class TimeEntryActivityLCR extends DefaultListCellRenderer {
 
+		private static final long serialVersionUID = 1L;
+
         @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             if (value instanceof TimeEntryActivity) {
                 value = ((TimeEntryActivity) value).getName();
             } else {
@@ -212,8 +231,10 @@ public class Defaults {
 
     public static class WatcherLCR extends DefaultListCellRenderer {
 
+		private static final long serialVersionUID = 1L;
+
         @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             if (value instanceof Watcher) {
                 Watcher w = (Watcher) value;
                 value = String.format("%s (%d)", w.getName(), w.getId());
@@ -225,13 +246,15 @@ public class Defaults {
             return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         }
     }
-    
+
     public static class ProjectLCR extends DefaultListCellRenderer {
 
+		private static final long serialVersionUID = 1L;
+
         @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             if (value instanceof NestedProject) {
-                value = ((NestedProject) value).toString();
+                value =  value.toString();
             } else if (value instanceof Project) {
                 value = ((Project) value).getName();
             } else if (value == null) {
@@ -248,8 +271,10 @@ public class Defaults {
             return c;
         }
     }
-    
+
     public static class PercentLCR extends DefaultListCellRenderer {
+
+		private static final long serialVersionUID = 1L;
 
         public PercentLCR() {
             ((JLabel) this).setHorizontalAlignment(JLabel.RIGHT);

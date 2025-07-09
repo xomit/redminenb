@@ -1,10 +1,15 @@
-
 package com.kenai.redminenb;
 
-import javax.swing.UIManager;
 import org.openide.modules.ModuleInstall;
 
+import javax.swing.UIManager;
+
+/**
+ * Module installer.
+ */
 public class Installer extends ModuleInstall {
+
+	private static final long serialVersionUID = 1L;
 
     @Override
     public void restored() {
@@ -21,5 +26,4 @@ public class Installer extends ModuleInstall {
             UIManager.put("Hyperlink.activeColor", UIManager.getColor("nb.html.link.foreground.focus"));
         }
     }
-
 }

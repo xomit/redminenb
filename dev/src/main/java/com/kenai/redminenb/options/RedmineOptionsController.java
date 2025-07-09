@@ -17,14 +17,16 @@ package com.kenai.redminenb.options;
 
 import com.kenai.redminenb.RedmineConfig;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeSupport;
-import javax.swing.JComponent;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
+
+import javax.swing.JComponent;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeSupport;
 
 /**
  * RedmineOptionsController
@@ -59,11 +61,11 @@ public final class RedmineOptionsController extends OptionsPanelController imple
     @Override
     public void applyChanges() {
         String queryRefresh = panel.queriesTextField.getText().trim();
-        int r = queryRefresh.equals("") ? 0 : Integer.parseInt(queryRefresh);   // NOI18N
+        int r = queryRefresh.isEmpty() ? 0 : Integer.parseInt(queryRefresh);   // NOI18N
         RedmineConfig.getInstance().setQueryRefreshInterval(r);
 
         String issueRefresh = panel.issuesTextField.getText().trim();
-        r = issueRefresh.equals("") ? 0 : Integer.parseInt(issueRefresh);       // NOI18N
+        r = issueRefresh.isEmpty() ? 0 : Integer.parseInt(issueRefresh);       // NOI18N
         RedmineConfig.getInstance().setIssueRefreshInterval(r);
     }
 
@@ -79,7 +81,7 @@ public final class RedmineOptionsController extends OptionsPanelController imple
     }
 
     private boolean isValidRefreshValue(String s) {
-        if (!s.equals("")) {                                                     // NOI18N
+        if (!s.isEmpty()) {                                                     // NOI18N
             try {
                 int i = Integer.parseInt(s);
                 if (i < 5) {

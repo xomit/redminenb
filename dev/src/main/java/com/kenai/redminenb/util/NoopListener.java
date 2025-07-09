@@ -21,47 +21,47 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.Serializable;
 
-
 public class NoopListener implements MouseListener, KeyListener, Serializable {
-    private static final long serialVersionUID = 1L;
-    
-    @Override
-    public void mouseClicked(MouseEvent e) {
-        e.consume();
-    }
 
-    @Override
-    public void mousePressed(MouseEvent e) {
-        e.consume();
-    }
+	private static final long serialVersionUID = 1L;
 
-    @Override
-    public void mouseReleased(MouseEvent e) {
-        e.consume();
-    }
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		e.consume();
+	}
 
-    @Override
-    public void mouseEntered(MouseEvent e) {
-        e.consume();
-    }
+	@Override
+	public void mousePressed(MouseEvent e) {
+		e.consume();
+	}
 
-    @Override
-    public void mouseExited(MouseEvent e) {
-        e.consume();
-    }
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		e.consume();
+	}
 
-    @Override
-    public void keyTyped(KeyEvent e) {
-        e.consume();
-    }
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		e.consume();
+	}
 
-    @Override
-    public void keyPressed(KeyEvent e) {
-        e.consume();
-    }
+	@Override
+	public void mouseExited(MouseEvent e) {
+		e.consume();
+	}
 
-    @Override
-    public void keyReleased(KeyEvent e) {
-        e.consume();
-    }
+	@Override
+	public void keyTyped(KeyEvent e) {
+		e.consume();
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		e.consume();
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		e.consume();
+	}
 };

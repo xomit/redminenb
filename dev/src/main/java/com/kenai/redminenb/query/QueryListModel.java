@@ -18,29 +18,29 @@ package com.kenai.redminenb.query;
 import com.kenai.redminenb.issue.RedmineIssue;
 import com.taskadapter.redmineapi.bean.IssueCategory;
 import com.taskadapter.redmineapi.bean.Project;
-import com.taskadapter.redmineapi.bean.ProjectFactory;
 import com.taskadapter.redmineapi.bean.Tracker;
 import com.taskadapter.redmineapi.bean.User;
-import com.taskadapter.redmineapi.bean.UserFactory;
 import com.taskadapter.redmineapi.bean.Version;
+
+import javax.swing.table.AbstractTableModel;
+
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import javax.swing.table.AbstractTableModel;
 
 public class QueryListModel extends AbstractTableModel{
 
-    private List<RedmineIssue> issues = new ArrayList<>();
+	private static final long serialVersionUID = 1L;
+    private ArrayList<RedmineIssue> issues = new ArrayList<>();
 
     public void setIssues(Collection<RedmineIssue> issues) {
         this.issues = new ArrayList<>(issues);
         fireTableDataChanged();
     }
-    
+
     public RedmineIssue getIssue(int pos) {
         return issues.get(pos);
     }
-    
+
     @Override
     public int getRowCount() {
         return issues.size();
@@ -58,7 +58,7 @@ public class QueryListModel extends AbstractTableModel{
                 return Integer.class;
             case 1:
                 return String.class;
-            case 2: 
+            case 2:
                 return Tracker.class;
             case 3:
                 return String.class;
@@ -76,7 +76,7 @@ public class QueryListModel extends AbstractTableModel{
                 return null;
         }
     }
-    
+
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         RedmineIssue ri = getIssue(rowIndex);
@@ -85,7 +85,7 @@ public class QueryListModel extends AbstractTableModel{
                 return ri.getIssue().getId();
             case 1:
                 return ri.getSummary();
-            case 2: 
+            case 2:
                 return ri.getIssue().getTracker();
             case 3:
                 return ri.getIssue().getPriorityText();
@@ -93,7 +93,7 @@ public class QueryListModel extends AbstractTableModel{
                 return ri.getIssue().getStatusName();
             case 5:
                 if(ri.getIssue().getAssigneeId() != null) {
-                    User u = UserFactory.create(ri.getIssue().getAssigneeId());
+                    User u = new User(ri.getRepository().getManager().getTransport()).setId(ri.getIssue().getAssigneeId());
                     if (ri.getIssue().getAssigneeName() != null) {
                         u.setFullName(ri.getIssue().getAssigneeName());
                     }
@@ -107,7 +107,7 @@ public class QueryListModel extends AbstractTableModel{
                 return ri.getIssue().getTargetVersion();
             case 8:
                 if(ri.getIssue().getProjectId() != null) {
-                    Project p = ProjectFactory.create(ri.getIssue().getProjectId());
+                    Project p = new Project(ri.getRepository().getManager().getTransport()).setId(ri.getIssue().getProjectId());
                     p.setName(ri.getIssue().getProjectName());
                     return p;
                 } else {
@@ -117,5 +117,5 @@ public class QueryListModel extends AbstractTableModel{
                 return null;
         }
     }
-    
+
 }

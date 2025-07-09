@@ -15,11 +15,12 @@
  */
 package com.kenai.redminenb.util;
 
+import javax.swing.AbstractListModel;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import javax.swing.AbstractListModel;
 
 /**
  *
@@ -27,76 +28,78 @@ import javax.swing.AbstractListModel;
  */
 public class ListListModel<T> extends AbstractListModel {
 
-   protected final List<T> list;
+	private static final long serialVersionUID = 1L;
 
-   public ListListModel() {
-       this(new ArrayList<T>());
-   }
-   
-   public ListListModel(List<T> list) {
-      this.list = list;
-   }
+	protected final ArrayList<T> list;
 
-   public List<T> getElements() {
-      return Collections.unmodifiableList(list);
-   }
-   
-   public void add(T e) {
-      list.add(e);
-      fireIntervalAdded(this, list.size() - 1, list.size() - 1);
-   }
+	public ListListModel() {
+		this(new ArrayList<>());
+	}
 
-   public void add(int index, T element) {
-      list.add(index, element);
-      fireIntervalAdded(this, index, index);
-   }
+	public ListListModel(List<T> list) {
+		this.list = new ArrayList<>(list);
+	}
 
-   public T remove(int index) {
-      T removed = list.remove(index);
-      fireIntervalRemoved(this, index, index);
-      return removed;
-   }
+	public List<T> getElements() {
+		return Collections.unmodifiableList(list);
+	}
 
-   public void remove(T o) {
-      int index = list.indexOf(o);
-      if (index != -1) {
-         remove(index);
-      }
-   }
+	public void add(T e) {
+		list.add(e);
+		fireIntervalAdded(this, list.size() - 1, list.size() - 1);
+	}
 
-   public void addAll(Collection<? extends T> c) {
-      int idx1 = list.size();
-      list.addAll(c);
-      int idx2 = list.size() - 1;
-      if(idx2 >= idx1) {
-        fireIntervalAdded(this, idx1, idx2);
-      }
-   }
+	public void add(int index, T element) {
+		list.add(index, element);
+		fireIntervalAdded(this, index, index);
+	}
 
-   public void removeAll(Collection<? extends T> c) {
-      list.removeAll(c);
-      int firstIndex = 0;
-      int lastIndex = list.size() - 1;
-      fireContentsChanged(this, firstIndex, lastIndex);
-   }
+	public T remove(int index) {
+		T removed = list.remove(index);
+		fireIntervalRemoved(this, index, index);
+		return removed;
+	}
 
-   public void clear() {
-      if (!list.isEmpty()) {
-         int firstIndex = 0;
-         int lastIndex = list.size() - 1;
-         list.clear();
-         fireIntervalRemoved(this, firstIndex, lastIndex);
-      }
-   }
+	public void remove(T o) {
+		int index = list.indexOf(o);
+		if (index != -1) {
+			remove(index);
+		}
+	}
 
-   // ListModel implementation --------------------------------------------
-   @Override
-   public T getElementAt(int index) {
-      return list.get(index);
-   }
+	public void addAll(Collection<? extends T> c) {
+		int idx1 = list.size();
+		list.addAll(c);
+		int idx2 = list.size() - 1;
+		if (idx2 >= idx1) {
+			fireIntervalAdded(this, idx1, idx2);
+		}
+	}
 
-   @Override
-   public int getSize() {
-      return list.size();
-   }
+	public void removeAll(Collection<? extends T> c) {
+		list.removeAll(c);
+		int firstIndex = 0;
+		int lastIndex = list.size() - 1;
+		fireContentsChanged(this, firstIndex, lastIndex);
+	}
+
+	public void clear() {
+		if (!list.isEmpty()) {
+			int firstIndex = 0;
+			int lastIndex = list.size() - 1;
+			list.clear();
+			fireIntervalRemoved(this, firstIndex, lastIndex);
+		}
+	}
+
+	// ListModel implementation --------------------------------------------
+	@Override
+	public T getElementAt(int index) {
+		return list.get(index);
+	}
+
+	@Override
+	public int getSize() {
+		return list.size();
+	}
 }

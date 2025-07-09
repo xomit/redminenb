@@ -22,5 +22,4 @@ public interface SafeAutoCloseable extends AutoCloseable {
 
     @Override
     public void close();
-    
 }

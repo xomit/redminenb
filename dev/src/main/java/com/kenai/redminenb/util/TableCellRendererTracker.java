@@ -13,26 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.kenai.redminenb.util;
 
 import com.taskadapter.redmineapi.bean.Tracker;
-import java.awt.Component;
+
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
+
+import java.awt.Component;
 
 /**
  * @author Matthias Bläsing
  */
-public class TableCellRendererTracker extends DefaultTableCellRenderer{
+public class TableCellRendererTracker extends DefaultTableCellRenderer {
 
-    @Override
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        if (value instanceof Tracker) {
-            Tracker tracker = (Tracker) value;
-            value = tracker.getName();
-        }
-        return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-    }
-    
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+		if (value instanceof Tracker) {
+			Tracker tracker = (Tracker) value;
+			value = tracker.getName();
+		}
+		return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+	}
 }

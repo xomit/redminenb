@@ -44,27 +44,19 @@ package com.kenai.redminenb.query;
 
 import com.kenai.redminenb.ui.Defaults;
 import com.kenai.redminenb.util.ExpandablePanel;
-import java.awt.BorderLayout;
+import com.kenai.redminenb.util.LinkButton;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.text.NumberFormat;
+import org.openide.awt.Mnemonics;
+import org.openide.util.NbBundle;
+
 import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
@@ -74,22 +66,31 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.ListCellRenderer;
+import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import com.kenai.redminenb.util.LinkButton;
-import java.awt.FlowLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.Box;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import org.openide.awt.Mnemonics;
-import org.openide.util.NbBundle;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.text.NumberFormat;
 
 /**
  * Redmine Query Panel.
@@ -105,33 +106,29 @@ public class RedmineQueryPanel extends JPanel implements FocusListener {
    final ExpandablePanel bySavedQuery;
    //
    private final Color defaultTextColor;
-   
+
    // Handle list selection for list containing "NONE" value - selecting none
    // leeds to unselecting all other entries
-   private static final ListSelectionListener listNoneHandler = new ListSelectionListener() {
+   private static final ListSelectionListener listNoneHandler = (ListSelectionEvent e) -> {
+	   if(! e.getValueIsAdjusting()) {
+		   JList list = (JList) e.getSource();
+		   boolean noneSelected = false;
+		   boolean otherSelected = false;
+		   for(Object o: list.getSelectedValues()) {
+			   if(o instanceof ParameterValue) {
+				   if(ParameterValue.NONE_PARAMETERVALUE.equals(o)) {
+					   noneSelected = true;
+					   continue;
+				   }
+			   }
+			   otherSelected = true;
+		   }
+		   if(noneSelected && otherSelected) {
+			   list.setSelectedIndex(0);
+		   }
+	   }
+   };
 
-          @Override
-          public void valueChanged(ListSelectionEvent e) {
-              if(! e.getValueIsAdjusting()) {
-                  JList list = (JList) e.getSource();
-                  boolean noneSelected = false;
-                  boolean otherSelected = false;
-                  for(Object o: list.getSelectedValues()) {
-                      if(o instanceof ParameterValue) {
-                          if(ParameterValue.NONE_PARAMETERVALUE.equals(o)) {
-                              noneSelected = true;
-                              continue;
-                          }
-                      }
-                      otherSelected = true;
-                  }
-                  if(noneSelected && otherSelected) {
-                      list.setSelectedIndex(0);
-                  }
-              }
-          }
-      };
-   
    private final ActionListener clearActionListener = new ActionListener() {
 
        @Override
@@ -167,7 +164,7 @@ public class RedmineQueryPanel extends JPanel implements FocusListener {
            }
        }
    };
-   
+
    public RedmineQueryPanel(JComponent tableComponent, RedmineQueryController controller) {
       super();
       initComponents();
@@ -196,7 +193,7 @@ public class RedmineQueryPanel extends JPanel implements FocusListener {
       refreshCheckBox.setOpaque(false);
 
       ListCellRenderer parameterValueLCR = new Defaults.ParameterValueLCR();
-      
+
       trackerList.setCellRenderer(parameterValueLCR);
       trackerClear.addActionListener(clearActionListener);
       categoryList.setCellRenderer(parameterValueLCR);
@@ -217,24 +214,20 @@ public class RedmineQueryPanel extends JPanel implements FocusListener {
       projectClear.addActionListener(clearActionListener);
 
       setFocusListener(this);
-      
+
       categoryList.addListSelectionListener(listNoneHandler);
       priorityList.addListSelectionListener(listNoneHandler);
       trackerList.addListSelectionListener(listNoneHandler);
       statusList.addListSelectionListener(listNoneHandler);
       versionList.addListSelectionListener(listNoneHandler);
       assigneeList.addListSelectionListener(listNoneHandler);
-      
+
       queryTypeCombo.setSelectedIndex(0);
       updateQueryType();
-      queryTypeCombo.addActionListener(new ActionListener() {
+      queryTypeCombo.addActionListener((ActionEvent e) -> {
+		  updateQueryType();
+	  });
 
-          @Override
-          public void actionPerformed(ActionEvent e) {
-              updateQueryType();
-          }
-      });
-      
       validate();
       repaint();
    }
@@ -256,7 +249,7 @@ public class RedmineQueryPanel extends JPanel implements FocusListener {
            bySavedQuery.setVisible(false);
        }
    }
-   
+
    private void setFocusListener(FocusListener f) {
       cancelChangesButton.addFocusListener(f);
 
@@ -1180,7 +1173,7 @@ public class RedmineQueryPanel extends JPanel implements FocusListener {
       refreshConfigurationButton.setEnabled(enable);
 
       refreshCheckBox.setEnabled(enable);
-      
+
       modifyButton.setEnabled(enable);
       refreshButton.setEnabled(enable);
       removeButton.setEnabled(enable);
@@ -1275,6 +1268,8 @@ public class RedmineQueryPanel extends JPanel implements FocusListener {
 
    static class HackedScrollPane extends JScrollPane {
 
+		private static final long serialVersionUID = 1L;
+
       @Override
       public Dimension getPreferredSize() {
          setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -1283,8 +1278,10 @@ public class RedmineQueryPanel extends JPanel implements FocusListener {
          return dim;
       }
    }
-   
+
     static class StringListModel extends AbstractListModel {
+
+		private static final long serialVersionUID = 1L;
 
         String[] strings = {""};
 

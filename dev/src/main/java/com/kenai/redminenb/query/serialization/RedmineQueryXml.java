@@ -18,10 +18,13 @@ package com.kenai.redminenb.query.serialization;
 
 import com.kenai.redminenb.query.ParameterValue;
 import com.kenai.redminenb.query.RedmineQuery;
+
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlRootElement;
+
 import java.util.HashMap;
 import java.util.Map;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
+
 
 @XmlRootElement(name="redmineQuery")
 public class RedmineQueryXml {
@@ -29,14 +32,14 @@ public class RedmineQueryXml {
     @XmlAttribute
     private int version = 2;
     private Map<String,ParameterValue[]> parameters = new HashMap<>();
-    
+
     public RedmineQueryXml() {
     }
-    
+
     public RedmineQueryXml(RedmineQuery rq) {
         parameters = rq.getParameters();
     }
-    
+
     public void toRedmineQuery(RedmineQuery rq) {
         rq.setParameters(parameters);
         rq.setSaved(true);
