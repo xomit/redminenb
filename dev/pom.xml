@@ -27,7 +27,7 @@
 		<brandingToken>redminenb</brandingToken>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<netbeans.run.params>-J-Dnetbeans.full.hack=true</netbeans.run.params>
-		<!-- dependen versions -->
+		<!-- dependency versions -->
 		<commons-lang3.version>3.17.0</commons-lang3.version>
 		<eclipselink-moxy.version>3.0.0</eclipselink-moxy.version>
 		<findbugs.version>3.0.0</findbugs.version>
