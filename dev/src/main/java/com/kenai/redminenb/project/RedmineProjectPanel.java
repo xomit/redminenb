@@ -2,22 +2,12 @@ package com.kenai.redminenb.project;
 
 import com.kenai.redminenb.util.ActionListenerPanel;
 import com.kenai.redminenb.util.ExceptionHandler;
+import com.kenai.redminenb.util.TaskAdapterProject;
 import com.taskadapter.redmineapi.RedmineException;
-
-import java.awt.event.ActionEvent;
-import java.util.regex.Pattern;
-
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-
-import org.openide.util.NbBundle;
-
 import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.bean.Project;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.util.logging.Logger;
+import org.openide.util.NbBundle;
 
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
@@ -26,6 +16,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -102,7 +100,7 @@ public class RedmineProjectPanel extends ActionListenerPanel implements Document
    }
 
    private boolean createNewProject() {
-      final Project project = new Project(redmineManager.getTransport());
+      final Project project = TaskAdapterProject.fromManager(redmineManager);
 
       project.setName(projectName);
       project.setDescription(description);

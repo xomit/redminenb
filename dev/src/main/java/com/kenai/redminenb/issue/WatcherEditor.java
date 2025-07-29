@@ -16,11 +16,10 @@
 package com.kenai.redminenb.issue;
 
 import com.kenai.redminenb.user.RedmineUser;
+import com.kenai.redminenb.util.TaskAdapterProject;
 import com.taskadapter.redmineapi.IssueManager;
 import com.taskadapter.redmineapi.bean.Issue;
-import com.taskadapter.redmineapi.bean.Project;
 import com.taskadapter.redmineapi.bean.Watcher;
-import com.taskadapter.redmineapi.internal.Transport;
 
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
@@ -56,7 +55,7 @@ public class WatcherEditor {
             @Override
             protected Object doInBackground() throws Exception {
                 originalWatchers = new ArrayList<>(redmineIssue.getIssue().getWatchers());
-                users = redmineIssue.getRepository().getUsers(new Project(getTransport()).setId(redmineIssue.getIssue().getProjectId()));
+                users = redmineIssue.getRepository().getUsers(TaskAdapterProject.fromIssue(redmineIssue));
                 return null;
             }
 
@@ -123,8 +122,4 @@ public class WatcherEditor {
             }
         }.execute();
     }
-
-	private Transport getTransport() {
-		return redmineIssue.getRepository().getManager().getTransport();
-	}
 }

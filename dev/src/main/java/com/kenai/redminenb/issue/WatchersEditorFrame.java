@@ -18,6 +18,7 @@ package com.kenai.redminenb.issue;
 import com.kenai.redminenb.ui.Defaults;
 import com.kenai.redminenb.user.RedmineUser;
 import com.kenai.redminenb.util.ListListModel;
+import com.kenai.redminenb.util.TaskAdapterWatcher;
 import com.kenai.redminenb.util.WatcherComparator;
 import com.taskadapter.redmineapi.bean.Watcher;
 
@@ -52,7 +53,7 @@ public class WatchersEditorFrame extends javax.swing.JPanel {
         List<Watcher> potentialWatchers = new ArrayList<>();
         for(RedmineUser ru: users) {
             if(! watcherIds.contains(ru.getId())) {
-                Watcher w = new Watcher().setId(ru.getId());
+                Watcher w = TaskAdapterWatcher.fromUser(ru);
                 w.setName(ru.toString());
                 potentialWatchers.add(w);
             }

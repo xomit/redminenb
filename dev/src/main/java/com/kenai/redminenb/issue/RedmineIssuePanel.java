@@ -15,6 +15,9 @@ import com.kenai.redminenb.util.NestedProject;
 import com.kenai.redminenb.util.NullOrIntegerFormat;
 import com.kenai.redminenb.util.RedmineUtil;
 import com.kenai.redminenb.util.SafeAutoCloseable;
+import com.kenai.redminenb.util.TaskAdapterIssueCategory;
+import com.kenai.redminenb.util.TaskAdapterProject;
+import com.kenai.redminenb.util.TaskAdapterVersion;
 import com.kenai.redminenb.util.VerticalScrollPane;
 import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.bean.Attachment;
@@ -375,7 +378,7 @@ public class RedmineIssuePanel extends VerticalScrollPane {
                     trackerComboBox.setSelectedItem(issue.getTracker());
                     statusComboBox.setSelectedItem(issueStatus.value);
                     categoryComboBox.setSelectedItem(issue.getCategory());
-                    Project project = new Project(redmineIssue.getRepository().getManager().getTransport()).setId(issue.getProjectId());
+					Project project = TaskAdapterProject.fromIssue(redmineIssue);
                     project.setName(issue.getProjectName());
                     projectComboBox.setSelectedItem(new NestedProject(project));
 
@@ -556,7 +559,7 @@ public class RedmineIssuePanel extends VerticalScrollPane {
             }
         };
         if (issue != null) {
-            initProjectData(true, new Project(redmineIssue.getRepository().getManager().getTransport()).setId(issue.getProjectId()), issue.getTracker(), edtUpdate2);
+            initProjectData(true, TaskAdapterProject.fromIssue(redmineIssue), issue.getTracker(), edtUpdate2);
         } else {
             initProjectData(true, null, null, edtUpdate2);
         }
@@ -1735,7 +1738,7 @@ public class RedmineIssuePanel extends VerticalScrollPane {
 
     private void addVersion(Project proj, String versionName) {
         try (SafeAutoCloseable sac = redmineIssue.busy()) {
-            Version v = new Version(redmineIssue.getRepository().getManager().getTransport(), proj.getId(), versionName);
+            Version v = TaskAdapterVersion.fromIssue(redmineIssue, proj.getId(), versionName);
             redmineIssue.getRepository().getProjectManager().createVersion(v);
             final Collection<? extends Version> c = redmineIssue.getRepository().reloadVersions(proj);
             for (Version version : c) {
@@ -1778,7 +1781,7 @@ public class RedmineIssuePanel extends VerticalScrollPane {
 
     private void addCategory(Project proj, String categoryName) {
         try (SafeAutoCloseable sac = redmineIssue.busy()) {
-            IssueCategory ic = new IssueCategory(redmineIssue.getRepository().getManager().getTransport(), proj.getId(), categoryName);
+            IssueCategory ic = TaskAdapterIssueCategory.fromIssue(redmineIssue, proj.getId(), categoryName);
             redmineIssue.getRepository().getIssueManager().createCategory(ic);
             final Collection<? extends IssueCategory> c = redmineIssue.getRepository().reloadIssueCategories(proj);
             for (IssueCategory issueCategory : c) {

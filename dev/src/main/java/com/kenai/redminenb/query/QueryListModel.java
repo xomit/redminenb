@@ -16,6 +16,8 @@
 package com.kenai.redminenb.query;
 
 import com.kenai.redminenb.issue.RedmineIssue;
+import com.kenai.redminenb.util.TaskAdapterProject;
+import com.kenai.redminenb.util.TaskAdapterUser;
 import com.taskadapter.redmineapi.bean.IssueCategory;
 import com.taskadapter.redmineapi.bean.Project;
 import com.taskadapter.redmineapi.bean.Tracker;
@@ -93,7 +95,7 @@ public class QueryListModel extends AbstractTableModel{
                 return ri.getIssue().getStatusName();
             case 5:
                 if(ri.getIssue().getAssigneeId() != null) {
-                    User u = new User(ri.getRepository().getManager().getTransport()).setId(ri.getIssue().getAssigneeId());
+                    User u = TaskAdapterUser.fromIssue(ri);
                     if (ri.getIssue().getAssigneeName() != null) {
                         u.setFullName(ri.getIssue().getAssigneeName());
                     }
@@ -107,9 +109,7 @@ public class QueryListModel extends AbstractTableModel{
                 return ri.getIssue().getTargetVersion();
             case 8:
                 if(ri.getIssue().getProjectId() != null) {
-                    Project p = new Project(ri.getRepository().getManager().getTransport()).setId(ri.getIssue().getProjectId());
-                    p.setName(ri.getIssue().getProjectName());
-                    return p;
+                    return TaskAdapterProject.fromIssue(ri);
                 } else {
                     return null;
                 }

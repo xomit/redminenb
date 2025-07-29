@@ -18,6 +18,7 @@ package com.kenai.redminenb.issue;
 import com.kenai.redminenb.repository.RedmineRepository;
 import com.kenai.redminenb.util.AssigneeWrapper;
 import com.kenai.redminenb.util.NestedProject;
+import com.kenai.redminenb.util.TaskAdapterProject;
 import static com.kenai.redminenb.util.markup.StringUtil.escapeHTML;
 import com.kenai.redminenb.util.markup.TextileUtil;
 import com.taskadapter.redmineapi.bean.CustomFieldDefinition;
@@ -26,7 +27,6 @@ import com.taskadapter.redmineapi.bean.IssuePriority;
 import com.taskadapter.redmineapi.bean.IssueStatus;
 import com.taskadapter.redmineapi.bean.Journal;
 import com.taskadapter.redmineapi.bean.JournalDetail;
-import com.taskadapter.redmineapi.bean.Project;
 import com.taskadapter.redmineapi.bean.Tracker;
 import com.taskadapter.redmineapi.bean.Version;
 
@@ -246,7 +246,7 @@ public class JournalDisplay extends javax.swing.JPanel {
 		}
 		try {
 			Integer id = Integer.valueOf(value);
-			for (IssueCategory ic : repo.getIssueCategories(new Project(repo.getManager().getTransport()).setId(issue.getIssue().getProjectId()))) {
+			for (IssueCategory ic : repo.getIssueCategories(TaskAdapterProject.fromIssue(issue))) {
 				if (ic.getId().equals(id)) {
 					return ic.getName() + " (ID: " + id.toString() + ")";
 				}
@@ -262,7 +262,7 @@ public class JournalDisplay extends javax.swing.JPanel {
 		}
 		try {
 			Integer id = Integer.valueOf(value);
-			for (Version v : repo.getVersions(new Project(repo.getManager().getTransport()).setId(issue.getIssue().getProjectId()))) {
+			for (Version v : repo.getVersions(TaskAdapterProject.fromIssue(issue))) {
 				if (v.getId().equals(id)) {
 					return v.getName() + " (ID: " + id.toString() + ")";
 				}
@@ -326,7 +326,7 @@ public class JournalDisplay extends javax.swing.JPanel {
 		}
 		try {
 			Integer id = Integer.valueOf(value);
-			for (AssigneeWrapper ru : repo.getAssigneeWrappers(new Project(repo.getManager().getTransport()).setId(issue.getIssue().getProjectId()))) {
+			for (AssigneeWrapper ru : repo.getAssigneeWrappers(TaskAdapterProject.fromIssue(issue))) {
 				if (ru.getId().equals(id)) {
 					return ru.getName() + " (ID: " + id.toString() + ")";
 				}
